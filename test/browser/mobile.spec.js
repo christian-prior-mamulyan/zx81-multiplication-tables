@@ -87,7 +87,7 @@ test.describe('phone (touch)', () => {
     expect(await page.locator('#zx81-listing').evaluate((pre) => getComputedStyle(pre).overflowX)).toBe('auto');
   });
 
-  test('the five navigation bars wrap on a phone instead of overflowing', async ({ page }) => {
+  test('the five navigation bars stay one row on a phone and do not widen the page', async ({ page }) => {
     await page.goto('/design/navbars.html');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   });

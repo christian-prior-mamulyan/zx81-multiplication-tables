@@ -1,9 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-fa-kit-code="5df958b77d">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#cb4b16">
   <title>Navigation bar alternatives</title>
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/themes/default.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/utilities.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/native.css" media="print" onload="this.media='all'">
+  <script type="module" async src="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/webawesome.loader.js"></script>
   <link rel="stylesheet" href="../web/app.css">
   <link rel="stylesheet" href="../web/nav.css">
   <style>
@@ -16,48 +21,58 @@
 <body>
   <main>
     <h1>Navigation bar alternatives</h1>
-    <p>Five designs in Solarized orange, all with their own background so they look the same in light and dark themes. Try one on the game page with the link below each bar.</p>
+    <p>Five horizontal bars in Solarized orange. Each has its own <b>content</b> and its own <b>styling</b>. All stay on one row; on a phone they scroll sideways. Try one on the game page with the link below each bar.</p>
 
     <section data-variant="1">
-      <h2>1 · Solid bar</h2>
-      <p>A full orange band with cream text. The current page is underlined in cream. The strongest, loudest option.</p>
+      <h2>1 · Brand and links</h2>
+      <p><b>Content:</b> the site's mark on the left (a quarter block and "cprima", linking to career.cprima.net); Play, How to play, The program and GitHub on the right, each with a Font Awesome Pro icon. <b>Styling:</b> a solid orange band, cream text, the current page underlined.</p>
       <div class="slot"></div>
       <a class="try" href="../?nav=1">Open the game page with this bar</a>
     </section>
 
     <section data-variant="2">
-      <h2>2 · Thin rule</h2>
-      <p>Cream bar, slate links, one thick orange line below: the horizontal element of your identity, nothing else. The current page is orange.</p>
+      <h2>2 · Where am I</h2>
+      <p><b>Content:</b> a breadcrumb trail, career.cprima.net › ZX81 multiplication tables, and a "Source on GitHub" link at the end. No section links. <b>Styling:</b> a cream strip with one thick orange rule below, the horizontal element of the identity and nothing else.</p>
       <div class="slot"></div>
       <a class="try" href="../?nav=2">Open the game page with this bar</a>
     </section>
 
     <section data-variant="3">
-      <h2>3 · Pills</h2>
-      <p>Sand-coloured bar with rounded buttons; the current page is a filled orange pill. Friendly, familiar.</p>
+      <h2>3 · Sections</h2>
+      <p><b>Content:</b> three in-page tabs, Play, How to play and The program, with a count on each (steps to read, lines of BASIC). <b>Styling:</b> rounded tabs on a sand bar, the current tab filled orange.</p>
       <div class="slot"></div>
       <a class="try" href="../?nav=3">Open the game page with this bar</a>
     </section>
 
     <section data-variant="4">
-      <h2>4 · Terminal</h2>
-      <p>Dark slate bar, orange top line, monospace capitals; the current page is filled orange. A calm retro look.</p>
+      <h2>4 · Game status</h2>
+      <p><b>Content:</b> not links but live values from the emulated ZX81: its state, the BASIC line being executed and the emulated time, plus a link to the listing. (Here the numbers are simulated; on the game page they come from the emulator.) <b>Styling:</b> a dark monospace status bar with an orange top line.</p>
       <div class="slot"></div>
       <a class="try" href="../?nav=4">Open the game page with this bar</a>
     </section>
 
     <section data-variant="5">
-      <h2>5 · ZX81 inverse video</h2>
-      <p>Orange bar with monospace capitals and a small quarter block before each entry, like the quarter blocks in the game. The current page is shown in inverse colours, as the ZX81 does for inverse characters.</p>
+      <h2>5 · ZX81 menu</h2>
+      <p><b>Content:</b> a numbered keyword menu in capitals: 1 PLAY, 2 HOW TO PLAY, 3 LISTING, 4 SOURCE. <b>Styling:</b> monospace on orange, the numbers and the current entry in inverse video, as the ZX81 shows inverse characters.</p>
       <div class="slot"></div>
       <a class="try" href="../?nav=5">Open the game page with this bar</a>
     </section>
   </main>
   <script type="module">
     import { buildNav } from '../web/nav.js';
+    const bars = {};
     for (const section of document.querySelectorAll('section[data-variant]')) {
-      section.querySelector('.slot').append(buildNav(Number(section.dataset.variant)));
+      const variant = Number(section.dataset.variant);
+      bars[variant] = buildNav(variant);
+      section.querySelector('.slot').append(bars[variant]);
     }
+    bars[3].update({ programLines: 27 });
+    // design 4 shows live values; here they are simulated so the design can be judged
+    const script = [20, 80, 80, 150, 170, 80];
+    let tick = 0;
+    const show = () => bars[4].update({ emulatorState: 'running', line: script[tick % script.length], seconds: tick * 1.5 });
+    show();
+    setInterval(() => { tick += 1; show(); }, 1500);
   </script>
 </body>
 </html>

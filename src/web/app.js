@@ -2,11 +2,12 @@ import { KEY_CODES, createEmulator } from '../emulator/emulator-adapter.js';
 import { KeyQueue } from './key-queue.js';
 import { mountKeypad } from './keypad.js';
 import { lineNumber, programLines, sourceUrl } from './listing.js';
-import { buildNav } from './nav.js';
+import { bindNav, buildNav } from './nav.js';
 import { ScreenPresenter } from './screen-presenter.js';
 import { parseParams } from './url-params.js';
 
 let currentLine = null;
+let navBar = null;
 
 // Mark the listing line the emulated ZX81 is executing right now.
 function highlight(line) {
@@ -24,7 +25,9 @@ async function showListing(program) {
     if (!response.ok) return;
     const listing = document.getElementById('zx81-listing');
     listing.replaceChildren();
-    for (const text of programLines(await response.text())) {
+    const lines = programLines(await response.text());
+    navBar?.update?.({ programLines: lines.length });
+    for (const text of lines) {
       const element = document.createElement('span');
       element.className = 'line';
       const number = lineNumber(text);
@@ -70,7 +73,10 @@ async function startPresenter(emulator, params) {
 
 async function main() {
   const params = parseParams(window.location.search);
-  if (params.nav !== null) document.getElementById('zx81-nav').append(buildNav(params.nav));
+  if (params.nav !== null) {
+    navBar = buildNav(params.nav);
+    document.getElementById('zx81-nav').append(navBar);
+  }
   const container = document.getElementById('zx81-screen');
   const status = document.getElementById('zx81-status');
 
@@ -84,6 +90,9 @@ async function main() {
 
   // debug builds only: handles for the browser console and the test suite
   if (params.debug) window.zx81 = emulator;
+
+  // the navigation bar (when one is chosen) shows the emulator's live state where its design has room for it
+  if (navBar) bindNav(navBar, emulator);
 
   emulator.on('error', (error) => {
     status.textContent = `Error: ${error.message}`;
