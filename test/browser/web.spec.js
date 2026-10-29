@@ -1,6 +1,7 @@
 // The web shell: URL parameters, debug mode, mock emulator, GitHub Pages paths.
 import { expect, test } from './fixtures.js';
-import { frameWhenScreenMatches, typeKey } from './helpers.js';
+import { frameWhenScreenMatches } from './helpers.js';
+import { enterPause } from './trainer-helpers.js';
 
 test('the normal URL launches the trainer without any debug surface', async ({ page }) => {
   await page.goto('/');
@@ -41,8 +42,7 @@ test('the line being executed is highlighted in the listing', async ({ page }) =
   await expect(page.locator('#zx81-debug [data-f="line"]')).toHaveText('20');
   // after "5" Enter the program waits in line 150 (PAUSE P*50 = 5 seconds)
   await page.waitForFunction(() => window.zx81.getScreenRows().includes('{L}'));
-  await typeKey(page, '5');
-  await typeKey(page, 'Enter');
+  await enterPause(page, 5);
   await page.waitForSelector('#zx81-listing [data-line="150"].current');
   await expect(page.locator('#zx81-listing .current')).toHaveCount(1);
 });
@@ -57,14 +57,17 @@ test('the keyboard works without clicking the screen first', async ({ page }) =>
 test('the Reload button, outside the simulation, starts the program again', async ({ page }) => {
   await page.goto('/?debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
-  await typeKey(page, '1');
-  await typeKey(page, 'Enter');
+  await enterPause(page, 1);
   await page.waitForFunction(() => window.zx81.getScreenRows().some((row) => row.includes('[Q1]'))); // exercise drawn
 
   expect(await page.locator('iframe #zx81-reload').count()).toBe(0); // the button is not inside the emulator frame
-  const before = await page.evaluate(() => window.zx81.frame);
+  // count the program loads, so "the machine was powered on again" is not guessed from frame numbers
+  await page.evaluate(() => {
+    window.zx81Loads = 0;
+    window.zx81.on('program-loaded', () => (window.zx81Loads += 1));
+  });
   await page.click('#zx81-reload');
-  await page.waitForFunction((frame) => window.zx81.state === 'running' && window.zx81.frame < frame, before);
+  await page.waitForFunction(() => window.zx81Loads === 1);
   // back at the prompt: no drawing, waiting for the pause input
   await page.waitForFunction(() => {
     const rows = window.zx81.getScreenRows();

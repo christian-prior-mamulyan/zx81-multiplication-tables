@@ -1,7 +1,7 @@
 // The five alternative HORIZONTAL navigation bars in Solarized orange. Each has its own content
 // and its own styling; all stay on one row (scrolling sideways when the screen is narrow).
 import { expect, test } from './fixtures.js';
-import { typeKey } from './helpers.js';
+import { enterPause } from './trainer-helpers.js';
 
 const ORANGE = 'rgb(203, 75, 22)'; // Solarized orange #cb4b16
 const VARIANTS = [1, 2, 3, 4, 5];
@@ -176,8 +176,7 @@ test('bar 4 on the game page shows the real emulator: state, BASIC line and time
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
   await expect(status('state')).toHaveText('RUNNING');
   await expect(status('line')).toHaveText('20'); // INPUT P waits in line 20
-  await typeKey(page, '5');
-  await typeKey(page, 'Enter');
+  await enterPause(page, 5);
   await expect(status('line')).toHaveText('150', { timeout: 20_000 }); // PAUSE P*50
   await page.waitForFunction(() => document.querySelector('nav.nav-4 [data-status="time"]').textContent !== '00:00');
 });
