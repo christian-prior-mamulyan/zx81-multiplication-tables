@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Navigation bar alternatives</title>
+  <link rel="stylesheet" href="../web/app.css">
+  <link rel="stylesheet" href="../web/nav.css">
+  <style>
+    section { margin: 0 0 2rem; }
+    h2 { font-size: 1.1rem; margin: 0 0 0.25rem; }
+    p { margin: 0 0 0.5rem; font-size: 0.9rem; }
+    .try { font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Navigation bar alternatives</h1>
+    <p>Five designs in Solarized orange, all with their own background so they look the same in light and dark themes. Try one on the game page with the link below each bar.</p>
+
+    <section data-variant="1">
+      <h2>1 · Solid bar</h2>
+      <p>A full orange band with cream text. The current page is underlined in cream. The strongest, loudest option.</p>
+      <div class="slot"></div>
+      <a class="try" href="../?nav=1">Open the game page with this bar</a>
+    </section>
+
+    <section data-variant="2">
+      <h2>2 · Thin rule</h2>
+      <p>Cream bar, slate links, one thick orange line below: the horizontal element of your identity, nothing else. The current page is orange.</p>
+      <div class="slot"></div>
+      <a class="try" href="../?nav=2">Open the game page with this bar</a>
+    </section>
+
+    <section data-variant="3">
+      <h2>3 · Pills</h2>
+      <p>Sand-coloured bar with rounded buttons; the current page is a filled orange pill. Friendly, familiar.</p>
+      <div class="slot"></div>
+      <a class="try" href="../?nav=3">Open the game page with this bar</a>
+    </section>
+
+    <section data-variant="4">
+      <h2>4 · Terminal</h2>
+      <p>Dark slate bar, orange top line, monospace capitals; the current page is filled orange. A calm retro look.</p>
+      <div class="slot"></div>
+      <a class="try" href="../?nav=4">Open the game page with this bar</a>
+    </section>
+
+    <section data-variant="5">
+      <h2>5 · ZX81 inverse video</h2>
+      <p>Orange bar with monospace capitals and a small quarter block before each entry, like the quarter blocks in the game. The current page is shown in inverse colours, as the ZX81 does for inverse characters.</p>
+      <div class="slot"></div>
+      <a class="try" href="../?nav=5">Open the game page with this bar</a>
+    </section>
+  </main>
+  <script type="module">
+    import { buildNav } from '../web/nav.js';
+    for (const section of document.querySelectorAll('section[data-variant]')) {
+      section.querySelector('.slot').append(buildNav(Number(section.dataset.variant)));
+    }
+  </script>
+</body>
+</html>

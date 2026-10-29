@@ -13,7 +13,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { expectedExercises } from '../test/browser/trainer-helpers.js';
+import { expectedExercises, parseExercise } from '../test/browser/trainer-helpers.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FREEZE_AFTER_ANSWER = 30;
@@ -37,8 +37,9 @@ export async function captureWith(page, baseUrl, outDir) {
   // emulated frames, never at wall-clock moments. The handler is installed first and the machine
   // is then powered on again (reset), so it sees the program from its first frame.
   const frozenAt = await page.evaluate(
-    ({ after, script, latestFirstFrame }) =>
+    ({ after, script, latestFirstFrame, parseSource }) =>
       new Promise((resolve, reject) => {
+        const parse = new Function(`return ${parseSource}`)();
         let armed = false;
         let first = null;
         let seen = null;
@@ -62,8 +63,9 @@ export async function captureWith(page, baseUrl, outDir) {
             if (direction === 'down') window.zx81.keyDown(key);
             else window.zx81.keyUp(key);
           }
-          const header = /^(\d+) X (\d+)$/.exec(rows[0] ?? '');
-          if (seen === null && header && /^\d+$/.test(rows[1 + Number(header[1])] ?? '')) seen = frame;
+          // the multiplication is not printed as numbers; the shared parser reads the drawing
+          const shown = parse(rows);
+          if (seen === null && shown && shown.answer !== null) seen = frame;
           if (seen !== null && frame >= seen + after) {
             off();
             window.zx81.stop();
@@ -72,7 +74,7 @@ export async function captureWith(page, baseUrl, outDir) {
         });
         window.zx81.reset();
       }),
-    { after: FREEZE_AFTER_ANSWER, script: KEY_SCRIPT, latestFirstFrame: LATEST_FIRST_FRAME },
+    { after: FREEZE_AFTER_ANSWER, script: KEY_SCRIPT, latestFirstFrame: LATEST_FIRST_FRAME, parseSource: parseExercise.toString() },
   );
 
   const { screenshot, text, dfile } = await page.evaluate(async () => {
@@ -99,7 +101,7 @@ export async function captureWith(page, baseUrl, outDir) {
 }
 
 async function main() {
-  const port = Number(process.env.ZX81_PORT ?? 8765);
+  const port = Number(process.env.ZX81_TEST_PORT ?? 8766); // not the dev server's port (8765)
   const python = (process.env.ZX81_PY ?? 'uv run --no-project python').split(' ');
   const server = spawn(python[0], [...python.slice(1), 'tools/serve.py', '--dir', 'public', '--port', String(port)], {
     cwd: ROOT,

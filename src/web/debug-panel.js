@@ -13,6 +13,7 @@ export function mountDebugPanel(root, emulator) {
       <dt>program</dt><dd data-f="program"></dd>
       <dt>frame</dt><dd data-f="frame"></dd>
       <dt>emulated time</dt><dd data-f="time"></dd>
+      <dt>BASIC line</dt><dd data-f="line"></dd>
       <dt>last key</dt><dd data-f="key"></dd>
       <dt>PC</dt><dd data-f="pc"></dd>
     </dl>
@@ -34,6 +35,7 @@ export function mountDebugPanel(root, emulator) {
     field('program').textContent = emulator.program ?? '-';
     field('frame').textContent = emulator.frame;
     field('time').textContent = `${(emulator.frame / FRAMES_PER_SECOND).toFixed(2)} s`;
+    field('line').textContent = emulator.line ?? '-';
     field('key').textContent = emulator.lastKey ?? '-';
     field('pc').textContent = emulator.pc === null ? 'n/a' : `0x${hex(emulator.pc, 4)}`;
     try {
@@ -79,6 +81,6 @@ export function mountDebugPanel(root, emulator) {
       refresh();
     }
   });
-  for (const name of ['program-loaded', 'stopped', 'error']) emulator.on(name, refresh);
+  for (const name of ['program-loaded', 'stopped', 'error', 'line']) emulator.on(name, refresh);
   refresh();
 }

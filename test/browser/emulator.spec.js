@@ -68,7 +68,13 @@ test('semigraphics are rendered by the emulator (pixel regression)', async ({ pa
   await frameWhenScreenMatches(page, /\[Q138\]/);
   await waitForFrame(page, (await page.evaluate(() => window.zx81.frame)) + 5);
   await pauseEmulator(page);
-  await expect(page.frameLocator('#zx81-frame').locator('#emulator_canvas')).toHaveScreenshot('graphics.png');
+  // Compare the emulator's own canvas bitmap (via the adapter), not a screenshot of the page:
+  // a page screenshot changes size with sub-pixel layout, the canvas bitmap does not.
+  const png = await page.evaluate(async () => {
+    const blob = await window.zx81.captureScreen();
+    return Array.from(new Uint8Array(await blob.arrayBuffer()));
+  });
+  expect(Buffer.from(png)).toMatchSnapshot('graphics.png', { maxDiffPixelRatio: 0.002 });
 });
 
 test('captureScreen returns a PNG of the emulated display only', async ({ page }) => {

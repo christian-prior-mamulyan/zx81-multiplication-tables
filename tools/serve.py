@@ -14,6 +14,7 @@ http://localhost:PORT/PREFIX/ catches root-relative asset paths. Default port 87
 
 import argparse
 import functools
+import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 
@@ -45,6 +46,14 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
+class Server(ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        # a browser that navigates away aborts its running downloads; that is not an error here
+        if issubclass(sys.exc_info()[0], ConnectionError):
+            return
+        super().handle_error(request, client_address)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dir", default="public")
@@ -54,7 +63,7 @@ def main():
 
     Handler.prefix = args.prefix.strip("/") if args.prefix else None
     handler = functools.partial(Handler, directory=args.dir)
-    with ThreadingHTTPServer(("127.0.0.1", args.port), handler) as server:
+    with Server(("127.0.0.1", args.port), handler) as server:
         print(f"serving {args.dir} on http://localhost:{args.port}/", flush=True)
         server.serve_forever()
 

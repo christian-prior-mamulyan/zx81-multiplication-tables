@@ -1,4 +1,3 @@
-# The delay mechanism used by the trainer: an empty FOR/NEXT busy loop
-10 FOR W=1 TO 100
-20 NEXT W
-30 PRINT "DONE"
+# The delay mechanism used by the trainer: PAUSE n waits n frames (50 frames = 1 emulated second)
+10 PAUSE 100
+20 PRINT "DONE"

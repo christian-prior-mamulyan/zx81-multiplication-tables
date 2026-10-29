@@ -4,7 +4,7 @@ import { MockZX81Emulator, SCENARIOS } from '../mock-emulator.js';
 
 function collect(emulator) {
   const log = [];
-  for (const name of ['ready', 'program-loaded', 'frame', 'stopped', 'error']) {
+  for (const name of ['ready', 'program-loaded', 'frame', 'line', 'stopped', 'error']) {
     emulator.on(name, (payload) => log.push([name, payload]));
   }
   return log;
@@ -32,10 +32,10 @@ test('normal: loads, runs, shows the first exercise deterministically', async ()
   const log = collect(emulator);
   await emulator.loadProgram('trainer');
   assert.equal(emulator.state, 'running');
-  assert.equal(emulator.getScreenRows()[0], 'PAUSE 1-9');
+  assert.equal(emulator.getScreenRows()[0], 'ENTER YOUR INDIVIDUAL PAUSE');
   emulator.tick(12);
   assert.equal(emulator.frame, 12);
-  assert.equal(emulator.getScreenRows()[0], '7 X 4');
+  assert.equal(emulator.getScreenRows()[0], '[Q1][Q1][Q1][Q1]');
   assert.equal(emulator.getScreenRows().at(-1), '28');
   assert.equal(names(log).filter((n) => n === 'frame').length, 12);
   assert.ok(names(log).includes('program-loaded'));
@@ -108,7 +108,7 @@ test('captureScreen returns a Blob with the screen text', async () => {
   await emulator.loadProgram('x');
   const blob = await emulator.captureScreen();
   assert.ok(blob instanceof Blob);
-  assert.equal(await blob.text(), 'PAUSE 1-9');
+  assert.equal(await blob.text(), 'ENTER YOUR INDIVIDUAL PAUSE');
 });
 
 test('reset reloads the program from frame 0', async () => {
@@ -118,4 +118,32 @@ test('reset reloads the program from frame 0', async () => {
   await emulator.reset();
   assert.equal(emulator.frame, 0);
   assert.equal(emulator.program, 'trainer');
+});
+
+test('line events report the BASIC line being executed, only when it changes', async () => {
+  const emulator = new MockZX81Emulator();
+  const lines = [];
+  emulator.on('line', ({ line, frame }) => lines.push([frame, line]));
+  await emulator.loadProgram('trainer');
+  emulator.tick(14);
+  assert.deepEqual(lines, [
+    [1, 10],
+    [3, 20],
+    [6, 80],
+    [9, 150],
+    [12, 170],
+  ]);
+  assert.equal(emulator.line, 170);
+});
+
+test('reset starts the line sequence again', async () => {
+  const emulator = new MockZX81Emulator();
+  await emulator.loadProgram('trainer');
+  emulator.tick(5);
+  await emulator.reset();
+  assert.equal(emulator.line, null);
+  const lines = [];
+  emulator.on('line', ({ line }) => lines.push(line));
+  emulator.tick(1);
+  assert.deepEqual(lines, [10]);
 });

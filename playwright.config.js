@@ -2,7 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 // ZX81_PY overrides how Python is started (CI uses python3, locally uv is used).
 const python = process.env.ZX81_PY ?? 'uv run --no-project python';
-const port = Number(process.env.ZX81_PORT ?? 8765);
+// tests use their own port so a running `just dev` (8765) is never in the way
+const port = Number(process.env.ZX81_TEST_PORT ?? 8766);
 
 export default defineConfig({
   testDir: 'test/browser',

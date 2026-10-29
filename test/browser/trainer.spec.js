@@ -2,7 +2,7 @@
 // The seeded variant is identical to the trainer except RAND becomes RAND 1.
 import { expect, test } from '@playwright/test';
 import { frameWhenScreenMatches, openProgram } from './helpers.js';
-import { collectExercises, expectedBlockRow, expectedExercises, startTrainer } from './trainer-helpers.js';
+import { collectExercises, expectedExercises, expectedLayout, startTrainer } from './trainer-helpers.js';
 
 test('runs exactly ten exercises with correct operands, drawing and answers', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
@@ -12,49 +12,87 @@ test('runs exactly ten exercises with correct operands, drawing and answers', as
   const expected = expectedExercises(1, 10); // ZX81 RND sequence for seed 1, computed independently
   exercises.forEach((exercise, i) => {
     const { a, b } = expected[i];
+    // the operands are read off the drawing: a rows of b blocks
     expect([exercise.a, exercise.b], `exercise ${i + 1} operands`).toEqual([a, b]);
     expect(exercise.answer, `exercise ${i + 1} answer`).toBe(a * b);
-    // a rows of b full-block semigraphics (code 128), with a gap after every fifth block
-    expect(exercise.rows, `exercise ${i + 1} drawing`).toEqual(Array(a).fill(expectedBlockRow(b)));
+    expect(exercise.rows, `exercise ${i + 1} drawing`).toEqual(expectedLayout(a, b));
   });
   expect(finished || exercises.length === 10).toBe(true);
 });
 
-test('the program completes after the tenth exercise', async ({ page }) => {
+test('the multiplication is never printed as numbers', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
-  const { finished } = await collectExercises(page, 11); // asking for more than exist runs to the end
-  expect(finished).toBe(true);
-  await frameWhenScreenMatches(page, /^0\/190$/); // BASIC report: success, last line 190
+  const { printed } = await collectExercises(page, 10);
+  expect(printed).toBe(false);
 });
 
-test('the gap after every fifth block is really emitted', async ({ page }) => {
+test('after the tenth exercise the screen is cleared and tells the player to reload', async ({ page }) => {
+  await startTrainer(page, { pause: 1 });
+  const { finished, exercises } = await collectExercises(page, 11); // asking for more than exist runs to the end
+  expect(finished).toBe(true);
+  expect(exercises).toHaveLength(10);
+  // a program that ends makes the ZX81 print its report ("0/190"); this one never ends
+  const now = await page.evaluate(() => window.zx81.frame);
+  await page.waitForFunction((frame) => window.zx81.frame >= frame + 150, now);
+  const rows = await page.evaluate(() => window.zx81.getScreenRows());
+  expect(rows.filter(Boolean)).toEqual(['PRESS RELOAD TO PLAY AGAIN']); // nothing else on screen, no report
+  expect(await page.evaluate(() => window.zx81.line)).toBe(220);
+});
+
+test('units are quarter blocks, so every unit is separated from its neighbours', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
   const { exercises } = await collectExercises(page, 10);
-  const wide = exercises.filter((e) => e.b > 5);
-  expect(wide.length).toBeGreaterThan(0);
-  for (const e of wide) {
-    for (const row of e.rows) expect(row).toMatch(/^(\[Q128\]){5} (\[Q128\])+$/);
+  for (const e of exercises) {
+    for (const row of e.rows.filter(Boolean)) {
+      expect(row).toMatch(/^(\[Q1\])+( (\[Q1\])+)?$/); // only code 1, never a full block (128)
+      expect(row).not.toContain('Q128');
+    }
   }
 });
 
-test('the pause value controls the delay before the answer', async ({ browser }) => {
-  const gaps = [];
-  for (const pause of [1, 2]) {
+test('a blank line is printed above every result', async ({ page }) => {
+  await startTrainer(page, { pause: 1 });
+  const { exercises } = await collectExercises(page, 10);
+  expect(exercises).toHaveLength(10);
+  for (const e of exercises) expect(e.blankAboveAnswer, `${e.a} X ${e.b}`).toBe(true);
+});
+
+test('a gap after every fifth block across and a blank row after the fifth row down', async ({ page }) => {
+  await startTrainer(page, { pause: 1 });
+  const { exercises } = await collectExercises(page, 10);
+
+  const wide = exercises.filter((e) => e.b > 5);
+  const tall = exercises.filter((e) => e.a > 5); // more than five rows: the fifth row is followed by a blank row
+  expect(wide.length).toBeGreaterThan(0);
+  expect(tall.length).toBeGreaterThan(0);
+  for (const e of wide) {
+    for (const row of e.rows.filter(Boolean)) expect(row).toMatch(/^(\[Q1\]){5} (\[Q1\])+$/);
+  }
+  for (const e of tall) {
+    expect(e.rows[5], `after row 5 of ${e.a} X ${e.b}`).toBe('');
+    expect(e.rows.slice(0, 5).every(Boolean)).toBe(true);
+    expect(e.rows.filter((r) => r === '')).toHaveLength(1); // only one separator, after the fifth row
+  }
+});
+
+test('the pause input is in seconds', async ({ browser }) => {
+  // PAUSE P*50 waits P*50 ZX81 frames and the ZX81 shows 50 frames per second. The time between the
+  // last change of the drawing and the answer is P seconds plus an overhead (finishing the last
+  // row, printing the blank line and the answer). The ZX81's own frame counter does not tick in
+  // perfect step with the emulator's frames (frame lengths vary while BASIC is busy), so a few
+  // percent of jitter is normal: measured overheads of 7 to 22 frames for pauses of 1, 3 and 12 s.
+  for (const pause of [1, 3, 12]) {
     const page = await browser.newPage();
     await startTrainer(page, { pause });
     const { exercises } = await collectExercises(page, 1);
-    gaps.push(exercises[0].answerAt - exercises[0].drawnAt);
     await page.close();
+    const gap = exercises[0].answerAt - exercises[0].drawnAt;
+    expect(gap, `pause ${pause} s`).toBeGreaterThanOrEqual(pause * 50 - 5);
+    expect(gap, `pause ${pause} s`).toBeLessThanOrEqual(pause * 50 * 1.04 + 30);
   }
-  // The delay is P*100 empty FOR/NEXT iterations, so one more unit of P adds the time of 100
-  // iterations. Measured: about 106 emulated frames (~1.06 frames per iteration, 50 frames/s).
-  expect(gaps[0]).toBeGreaterThan(100);
-  const addedByOneUnit = gaps[1] - gaps[0];
-  expect(addedByOneUnit).toBeGreaterThan(90);
-  expect(addedByOneUnit).toBeLessThan(125);
 });
 
-test('the delay loop is measured in emulated frames, not wall-clock time', async ({ browser }) => {
+test('the delay is measured in emulated frames, not wall-clock time', async ({ browser }) => {
   const frames = [];
   for (const speed of [8, 6]) {
     const page = await browser.newPage();
@@ -63,5 +101,6 @@ test('the delay loop is measured in emulated frames, not wall-clock time', async
     await page.close();
   }
   expect(frames[0]).toBe(frames[1]); // same emulated time at different host speeds
-  expect(frames[0]).toBeGreaterThan(10);
+  expect(frames[0]).toBeGreaterThanOrEqual(100); // PAUSE 100 = 100 frames = 2 emulated seconds
+  expect(frames[0]).toBeLessThanOrEqual(115);
 });

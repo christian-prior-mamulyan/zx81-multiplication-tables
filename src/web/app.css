@@ -30,6 +30,33 @@ h1 {
   font-size: 1.4rem;
 }
 
+#zx81-stage {
+  position: relative;
+  width: 640px;
+  max-width: 100%;
+  background: #fff;
+}
+
+/* our own drawing of the ZX81 screen */
+#zx81-display {
+  display: none;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+#zx81-stage.presented #zx81-display {
+  display: block;
+}
+
+/* the emulator keeps running underneath, invisible: its screen is only read, not shown */
+#zx81-stage.presented #zx81-screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 #zx81-screen {
   width: 640px;
   max-width: 100%;
@@ -49,6 +76,48 @@ h1 {
   padding: 8px;
   background: #fff;
   color: #000;
+}
+
+.howto h2 {
+  font-size: 1.1rem;
+}
+
+.howto ol {
+  padding-left: 1.25rem;
+}
+
+/* above the emulator, Reload aligned to the right edge of the screen */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 640px;
+  max-width: 100%;
+  margin: 0.5rem 0;
+}
+
+#zx81-reload {
+  padding: 0.4rem 1rem;
+  font: inherit;
+}
+
+#zx81-listing .line {
+  display: block;
+}
+
+/* the line the emulated ZX81 is executing, in Solarized orange */
+#zx81-listing .line.current {
+  background: #cb4b16;
+  color: #fdf6e3;
+}
+
+#zx81-listing {
+  overflow-x: auto;
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  color: var(--fg);
+  font: 0.9rem/1.5 ui-monospace, monospace;
 }
 
 .hint,

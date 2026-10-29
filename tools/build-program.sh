@@ -38,7 +38,7 @@ fi
 
 # Test variant of the trainer: identical except RAND becomes RAND 1, so the random
 # exercises are the same on every run (RND stays the real ZX81 RND, only its seed is fixed).
-sed 's/^25 RAND$/25 RAND 1/' src/basic/trainer.bas > build/trainer-seeded.bas
+sed 's/^\( *25\) RAND$/\1 RAND 1/' src/basic/trainer.bas > build/trainer-seeded.bas
 if cmp -s src/basic/trainer.bas build/trainer-seeded.bas; then
   echo "seeded variant: line '25 RAND' not found in src/basic/trainer.bas" >&2
   exit 1

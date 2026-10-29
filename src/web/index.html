@@ -5,13 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ZX81 Multiplication Trainer</title>
   <link rel="stylesheet" href="./web/app.css">
+  <link rel="stylesheet" href="./web/nav.css">
 </head>
 <body>
   <main>
+    <div id="zx81-nav"></div>
     <h1>ZX81 Multiplication Trainer</h1>
-    <div id="zx81-screen" aria-label="ZX81 screen"></div>
-    <p id="zx81-status" role="status"></p>
-    <p class="hint">A real ZX81 BASIC program running in an emulated ZX81. Click the screen, type a pause from 1 to 9 and press Enter.</p>
+
+    <section class="howto" id="howto">
+      <h2>How to play</h2>
+      <ol>
+        <li>Type how many seconds you want to wait (1 to 99) and press Enter.</li>
+        <li>The ZX81 draws a multiplication as rows of small blocks: the number of rows times the number of blocks in a row. The blocks are grouped in fives, across and down, so you can count them.</li>
+        <li><b>Say the answer out loud</b> before the pause is over.</li>
+        <li>The ZX81 then shows the answer. Check yourself.</li>
+        <li>After ten multiplications the screen is cleared. Press <b>Reload</b> to play again.</li>
+      </ol>
+    </section>
+
+    <div class="controls">
+      <span id="zx81-status" role="status"></span>
+      <button id="zx81-reload" type="button">Reload</button>
+    </div>
+
+    <div id="zx81-stage">
+      <canvas id="zx81-display" width="640" height="480" aria-label="ZX81 screen"></canvas>
+      <div id="zx81-screen"></div>
+    </div>
+
+    <section id="zx81-program" hidden>
+      <h2>The program</h2>
+      <p class="hint">A real ZX81 BASIC program running in an emulated ZX81. In the listing, <code>\'</code> stands for the ZX81 quarter-block character (top-left quarter).</p>
+      <pre id="zx81-listing"></pre>
+    </section>
+
     <aside id="zx81-debug" hidden></aside>
   </main>
   <script type="module" src="./web/app.js"></script>

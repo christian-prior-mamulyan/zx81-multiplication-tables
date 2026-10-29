@@ -1,6 +1,8 @@
 // URL parameters of the trainer page. All asset URLs are relative so the site also works
 // under a GitHub Pages project path (https://USER.github.io/REPOSITORY/).
 
+import { NAV_VARIANTS } from './nav.js';
+
 const PROGRAM_ID = /^[a-z0-9-]+$/;
 export const DEFAULT_PROGRAM = 'trainer';
 
@@ -12,6 +14,11 @@ export function parseParams(search) {
     program: program && PROGRAM_ID.test(program) ? program : DEFAULT_PROGRAM,
     debug: params.get('debug') === '1',
     emulator: params.get('emulator') === 'mock' ? 'mock' : 'real',
+    // "screen" (default): the page draws the ZX81 screen itself from its contents, with a hard cut
+    // on clear; "emulator": show the emulator's own TV-raster picture unchanged
+    renderer: params.get('renderer') === 'emulator' ? 'emulator' : 'screen',
+    // navigation bar design 1-5 (see design/navbars.html); none unless asked for
+    nav: NAV_VARIANTS.includes(Number(params.get('nav'))) ? Number(params.get('nav')) : null,
     scenario: params.get('scenario') || 'normal',
     // emulator-native speed index 0-8 (4 = real time); only used when given
     speed: Number.isInteger(speed) && speed >= 0 && speed <= 8 ? speed : null,

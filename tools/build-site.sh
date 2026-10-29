@@ -12,14 +12,18 @@ cd "$ROOT"
 
 bash tools/build-program.sh
 
-rm -rf public/emulator public/web public/debug public/index.html
-mkdir -p public/emulator public/web public/debug
+rm -rf public/emulator public/web public/debug public/design public/index.html
+mkdir -p public/emulator public/web public/debug public/design
 
 cp -r src/emulator/zx81/. public/emulator/
 cp src/emulator/*.js public/emulator/
 cp src/web/index.html public/index.html
-cp src/web/*.js src/web/app.css public/web/
+cp src/web/*.js src/web/*.css public/web/
 cp src/web/debug/charset.html public/debug/charset.html
+cp src/web/design/navbars.html public/design/navbars.html
+# BASIC sources, shown under the emulator (including the seeded test variant)
+mkdir -p public/basic
+cp src/basic/*.bas build/trainer-seeded.bas public/basic/
 cp .nojekyll public/.nojekyll
 
 echo "site ready in public/"

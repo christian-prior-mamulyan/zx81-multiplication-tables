@@ -12,8 +12,19 @@ const SLOW_FRAME_MS = 500;
 const ERROR_FRAME = 5;
 const FINISH_FRAME = 5;
 
-// first exercise of the "normal" scenario: 7 X 4 drawn as 7 rows of 4 blocks, then the answer
-const EXERCISE = ['7 X 4', ...Array(7).fill('[Q128][Q128][Q128][Q128]'), '28'];
+// first exercise of the "normal" scenario: 7 times 4, drawn as 7 rows of 4 quarter blocks (code 1)
+// with no numbers, a blank line after the fifth row, a blank line above the answer, then the answer
+export const ROW = '[Q1][Q1][Q1][Q1]';
+const EXERCISE = [...Array(5).fill(ROW), '', ...Array(2).fill(ROW), '', '28'];
+
+// [from frame, BASIC line being executed]
+export const LINE_SCRIPT = [
+  [0, 10],
+  [3, 20],
+  [6, 80],
+  [9, 150],
+  [12, 170],
+];
 
 export class MockZX81Emulator extends Emitter {
   // autoRun: advance frames with a timer (browser). Tests set autoRun:false and call tick(n).
@@ -27,6 +38,7 @@ export class MockZX81Emulator extends Emitter {
     this.state = 'idle';
     this.frame = 0;
     this.pc = 0;
+    this.line = null;
     this.lastKey = null;
     this.keys = [];
     this.memory = new Uint8Array(65536);
@@ -38,6 +50,7 @@ export class MockZX81Emulator extends Emitter {
   async loadProgram(id) {
     this.program = id;
     this.frame = 0;
+    this.line = null;
     this.state = 'loading';
     if (this.scenario === 'load-error') {
       this.state = 'error';
@@ -78,6 +91,7 @@ export class MockZX81Emulator extends Emitter {
       this.pc = (this.pc + 1) & 0xffff;
       this._render();
       this.emit('frame', { frame: this.frame, rows: this.rows });
+      this._emitLine();
       if (this.scenario === 'runtime-error' && this.frame === ERROR_FRAME) {
         this._stopTimer();
         this.state = 'error';
@@ -97,6 +111,8 @@ export class MockZX81Emulator extends Emitter {
   }
 
   keyUp() {}
+
+  focus() {}
 
   getScreen() {
     return { width: 256, height: 192, rows: [...this.rows] };
@@ -125,7 +141,7 @@ export class MockZX81Emulator extends Emitter {
   _render() {
     if (this.scenario === 'blank-screen') this.rows = [];
     else if (this.scenario === 'finished' && this.frame >= FINISH_FRAME) this.rows = ['FINISHED'];
-    else if (this.frame < 3) this.rows = ['PAUSE 1-9'];
+    else if (this.frame < 3) this.rows = ['ENTER YOUR INDIVIDUAL PAUSE'];
     else this.rows = EXERCISE.slice(0, Math.min(EXERCISE.length, this.frame - 1));
     if (this.container) {
       let pre = this.container.querySelector('pre');
@@ -135,6 +151,16 @@ export class MockZX81Emulator extends Emitter {
         this.container.replaceChildren(pre);
       }
       pre.textContent = this.getScreenText();
+    }
+  }
+
+  // the mock "executes" a fixed script of BASIC lines so listeners can be tested without a Z80
+  _emitLine() {
+    let line = LINE_SCRIPT[0][1];
+    for (const [fromFrame, scriptLine] of LINE_SCRIPT) if (this.frame >= fromFrame) line = scriptLine;
+    if (line !== this.line) {
+      this.line = line;
+      this.emit('line', { line, frame: this.frame });
     }
   }
 

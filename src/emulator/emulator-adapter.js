@@ -6,18 +6,22 @@
 //   reset()                    Promise<void>   reload the current program from power-on
 //   start() / stop()                           resume / pause emulation
 //   keyDown(key) / keyUp(key)                  press / release a key (KeyboardEvent.key values)
+//   focus()                                    send real keyboard input to the emulated machine
 //   getScreen()                {width,height,data}  RGBA pixels of the emulated display
 //   captureScreen()            Promise<Blob>   PNG of the emulated display only
 //   getMemory(address, length) Uint8Array
 //   setMemory(address, bytes)
 //   on(event, handler)         returns an unsubscribe function
-// Events: ready, program-loaded, frame, stopped, error.
+// Events: ready, program-loaded, frame, line ({line, frame}: the BASIC line being executed
+//   changed, read from the ZX81 system variable PPC once per frame), stopped, error.
 // Extras used by the debug panel and tests: state, program, frame, pc, lastKey, step(),
-//   getScreenText() / getScreenRows() (diagnostic text form, see zx81-text.js).
+//   getScreenText() / getScreenRows() (diagnostic text form, see zx81-text.js),
+//   getScreenCodes() (the logical screen as raw codes, for a renderer of our own).
 
-import { dfileAddress, displayFileRows } from './zx81-text.js';
+import { D_FILE, displayFileCodes, displayFileRows } from './zx81-text.js';
 
-export const EVENTS = ['ready', 'program-loaded', 'frame', 'stopped', 'error'];
+export const EVENTS = ['ready', 'program-loaded', 'frame', 'line', 'stopped', 'error'];
+export const PPC = 0x4007; // ZX81 system variable: line number of the statement being executed
 export const FRAMES_PER_SECOND = 50;
 
 export class Emitter {
@@ -38,7 +42,7 @@ export class Emitter {
 }
 
 // KeyboardEvent init for a key press, in the form the emulator's keyboard code reads it.
-const KEY_CODES = { Enter: 13, Backspace: 8, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Delete: 46 };
+export const KEY_CODES = { Enter: 13, Backspace: 8, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Delete: 46 };
 
 export function keyEventInit(key) {
   return {
@@ -62,6 +66,7 @@ export class RealZX81Emulator extends Emitter {
     this.program = null;
     this.state = 'idle';
     this.frame = 0;
+    this.line = null; // BASIC line being executed (event "line"), null before the first sample
     this.lastKey = null;
     this.iframe = null;
     queueMicrotask(() => this.emit('ready'));
@@ -74,6 +79,7 @@ export class RealZX81Emulator extends Emitter {
   async loadProgram(id) {
     this.program = id;
     this.frame = 0;
+    this.line = null;
     this._setState('loading');
     let response;
     try {
@@ -110,6 +116,13 @@ export class RealZX81Emulator extends Emitter {
     win.zx81Machine.onframe = (frame) => {
       this.frame = frame;
       this.emit('frame', { frame });
+      // PPC: the BASIC line the ROM is executing, sampled once per emulated frame
+      const [low, high] = win.zx81Machine.peek(PPC, 2);
+      const line = low | (high << 8);
+      if (line !== this.line) {
+        this.line = line;
+        this.emit('line', { line, frame });
+      }
     };
     this._setState('running');
     this.emit('program-loaded', { id });
@@ -117,6 +130,11 @@ export class RealZX81Emulator extends Emitter {
 
   reset() {
     return this.loadProgram(this.program);
+  }
+
+  // Give the emulated keyboard the focus (it listens inside the emulator frame).
+  focus() {
+    this._win()?.focus();
   }
 
   start() {
@@ -175,8 +193,23 @@ export class RealZX81Emulator extends Emitter {
 
   getScreenRows() {
     const machine = this._machine();
-    const read = (addr) => machine.peek(addr, 1)[0];
-    return displayFileRows(read, dfileAddress(read));
+    if (!machine) return []; // nothing runs yet
+    return displayFileRows(...this._displayReader(machine));
+  }
+
+  // The logical screen as raw character codes (24 rows of 32), for a renderer of our own.
+  getScreenCodes() {
+    const machine = this._machine();
+    if (!machine) return null;
+    return displayFileCodes(...this._displayReader(machine));
+  }
+
+  // [read(addr), dfile]: one copy of the display file instead of one peek per byte
+  _displayReader(machine) {
+    const [low, high] = machine.peek(D_FILE, 2);
+    const dfile = low | (high << 8);
+    const bytes = machine.peek(dfile, 800);
+    return [(addr) => bytes[addr - dfile] ?? 0, dfile];
   }
 
   getScreenText() {

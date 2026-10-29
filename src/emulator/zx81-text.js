@@ -5,6 +5,7 @@
 export const D_FILE = 0x400c; // system variable: address of the display file
 export const NEWLINE = 118; // end of a display-file line
 export const SCREEN_ROWS = 24; // 22 upper rows + 2 lower rows
+export const SCREEN_COLUMNS = 32;
 
 const CHARS = ' ??????????"£$:?()><=+-*/;,.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -34,6 +35,26 @@ export function displayFileRows(read, dfile) {
       row += zx81CodeToText(code);
     }
   }
+  return rows;
+}
+
+// Raw character codes of the display: SCREEN_ROWS rows, each padded with blanks (code 0) to
+// SCREEN_COLUMNS columns. This is the logical screen, not the emulated TV picture.
+export function displayFileCodes(read, dfile) {
+  const rows = [];
+  let addr = dfile + 1;
+  let row = [];
+  for (let guard = 0; guard < 4000 && rows.length < SCREEN_ROWS && addr < 0x10000; guard++) {
+    const code = read(addr++);
+    if (code === NEWLINE) {
+      while (row.length < SCREEN_COLUMNS) row.push(0);
+      rows.push(row.slice(0, SCREEN_COLUMNS));
+      row = [];
+    } else {
+      row.push(code);
+    }
+  }
+  while (rows.length < SCREEN_ROWS) rows.push(Array(SCREEN_COLUMNS).fill(0));
   return rows;
 }
 

@@ -1,0 +1,145 @@
+/* Navigation bar in Solarized orange, five alternatives (.nav-1 ... .nav-5).
+   Solarized: orange #cb4b16, base3 #fdf6e3, base2 #eee8d5, base01 #586e75, base02 #073642.
+   Every variant sets its own background, so it looks the same in light and dark page themes.
+   Text is bold 1.2rem (19.2px), which counts as large text: 3:1 contrast is enough, and every
+   combination below reaches it (cream on orange is about 4.3:1). */
+
+.site-nav {
+  --orange: #cb4b16;
+  --cream: #fdf6e3;
+  --sand: #eee8d5;
+  --slate: #586e75;
+  --night: #073642;
+  margin: 0 0 1rem;
+  font: 700 1.2rem/1.2 system-ui, sans-serif;
+}
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  display: block;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+}
+
+.site-nav a:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: -5px;
+}
+
+/* 1 - Solid bar: a full orange band, cream text, the current page underlined in cream */
+.nav-1 {
+  background: var(--orange);
+  padding: 0 0.5rem;
+}
+.nav-1 a {
+  color: var(--cream);
+}
+.nav-1 a:hover {
+  background: rgba(253, 246, 227, 0.18);
+}
+.nav-1 a[aria-current='page'] {
+  box-shadow: inset 0 -4px 0 var(--cream);
+}
+
+/* 2 - Thin rule: cream bar, slate links, one thick orange line below (the horizontal element) */
+.nav-2 {
+  background: var(--cream);
+  border-bottom: 4px solid var(--orange);
+}
+.nav-2 a {
+  color: var(--slate);
+}
+.nav-2 a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
+}
+.nav-2 a[aria-current='page'] {
+  color: var(--orange);
+}
+
+/* 3 - Pills: sand bar, rounded buttons, the current page filled orange */
+.nav-3 {
+  background: var(--sand);
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.5rem;
+}
+.nav-3 a {
+  color: var(--slate);
+  border-radius: 999px;
+}
+.nav-3 a:hover {
+  background: var(--cream);
+}
+.nav-3 a[aria-current='page'] {
+  background: var(--orange);
+  color: var(--cream);
+}
+
+/* 4 - Terminal: dark slate bar with an orange top line, the current page filled orange */
+.nav-4 {
+  background: var(--night);
+  border-top: 4px solid var(--orange);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.nav-4 a {
+  color: var(--cream);
+}
+.nav-4 a:hover {
+  box-shadow: inset 0 -4px 0 var(--orange);
+}
+.nav-4 a[aria-current='page'] {
+  background: var(--orange);
+}
+
+/* 5 - ZX81 inverse video: orange bar, monospace capitals, the current page in inverse colours,
+   each entry marked with a quarter block drawn in CSS (like the quarter blocks of the game) */
+.nav-5 {
+  background: var(--orange);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.nav-5 ul {
+  gap: 0;
+}
+.nav-5 a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--cream);
+}
+.nav-5 a::before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  /* one cell with only its top-left quarter filled: the quarter block of the game */
+  background: linear-gradient(currentColor, currentColor) top left / 50% 50% no-repeat;
+}
+.nav-5 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+.nav-5 a[aria-current='page'] {
+  background: var(--cream);
+  color: var(--orange);
+}
+
+@media (max-width: 30rem) {
+  .site-nav {
+    font-size: 1.2rem;
+  }
+  .site-nav a {
+    padding: 0.6rem 0.75rem;
+  }
+}

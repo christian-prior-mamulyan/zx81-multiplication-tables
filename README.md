@@ -4,12 +4,16 @@ A circa-1982 ZX81 BASIC multiplication trainer, run in the browser as a **real Z
 inside an emulated ZX81**. JavaScript only hosts, instruments and presents it; the BASIC program is
 never reimplemented in JavaScript.
 
-Ten multiplication exercises per run. Each is drawn as rows of ZX81 semigraphics blocks with a gap
-after every fifth block, waits for a pupil-specific pause, then shows the answer.
+The use: a player says the answer **out loud** before the program shows it. Ten multiplication
+exercises per run. Each is drawn as a rows of b quarter blocks (ZX81 semigraphics code 1, so every
+unit is visibly separated), with a gap after every fifth block across and a blank line after the
+fifth row. The program then waits for a player-specific pause (1 to 99, about 2 seconds per step),
+prints a blank line and shows the answer.
 
-**Status:** the trainer in `src/basic/trainer.bas` is a *provisional* reconstruction. Its on-screen
-layout (a rows of b full blocks) is a candidate, not yet the remembered original. The drawing lives
-in lines 80-140 and the glyph in line 100, so it can be changed in a few lines.
+**Status:** the trainer in `src/basic/trainer.bas` follows the layout described by the project owner
+(quarter blocks, groups of five, blank line above the result). It is still a reconstruction from
+memory. The drawing lives in lines 80-140 and the glyph in line 100, so it can be changed in a few
+lines.
 
 ## Run it locally
 
@@ -33,7 +37,21 @@ Python file server), and a C compiler for `zxtext2p` (native `gcc`, or `gcc` ins
 | `/?debug=1` | developer panel (state, frame, emulated time, last key, PC, memory, pause/run/step, reset, PNG capture); `window.zx81` is the adapter |
 | `/?emulator=mock&scenario=normal` | mock emulator, no Z80; scenarios `normal`, `slow`, `load-error`, `runtime-error`, `blank-screen`, `finished` |
 | `/?speed=0..8` | emulator speed index (4 = real time, 8 = 10x); emulated frame counts do not change |
+| `/?renderer=emulator` | show the emulator's own TV-raster picture instead of the page's drawing of the screen (see below) |
+| `/?nav=1..5` | try one of five navigation bar designs in Solarized orange on the game page |
+| `/design/navbars.html` | the five navigation bar designs side by side |
 | `/debug/charset.html` | every ZX81 semigraphics character, drawn from the ROM bitmaps |
+
+### How the screen is shown
+
+The emulator draws a TV picture from emulated scanlines. While the ZX81 is busy that picture can
+skew (rows shifted sideways) and `CLS` wipes the picture from top to bottom over several frames.
+So by default the page reads the ZX81's screen memory (the display file) every emulated frame and
+draws it itself on a canvas, using the glyph bitmaps of the original ROM. Drawing and typing show
+at once; when the program clears the screen, the old picture stays until the screen is completely
+cleared and is then replaced in one step (a hard cut). The logic is in `src/web/screen-presenter.js`
+and is unit-tested. The emulator still runs underneath, unchanged. Your keyboard goes to the
+emulated ZX81 from anywhere on the page.
 
 All URLs are relative, so the site also works below `https://USER.github.io/REPOSITORY/`.
 `just dev` additionally serves it under `/zx81-trainer/` to prove that.
@@ -76,7 +94,7 @@ just capture        # artifacts/screen.png, debug.txt, display-file.bin for a kn
   sequence, correct answers, the gap after every fifth block, the pause scaling the delay, and
   completion. A failure here points at the BASIC program, not the emulator.
 - Timing is measured in emulated frames (50 per emulated second), never wall-clock time.
-- Text forms of the screen (`[Q128]` for semigraphics) exist only for tests and diagnostics; they
+- Text forms of the screen (`[Q1]` for semigraphics) exist only for tests and diagnostics; they
   are not the authentic display.
 
 ## Deployment

@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { captureWith } from '../../tools/capture-screen.js';
-import { expectedBlockRow, expectedExercises } from './trainer-helpers.js';
+import { expectedExercises, expectedLayout } from './trainer-helpers.js';
 
 test('capture is deterministic and shows the known first exercise', async ({ browser, baseURL }) => {
   const dirs = [];
@@ -25,9 +25,13 @@ test('capture is deterministic and shows the known first exercise', async ({ bro
 
     const [{ a, b }] = expectedExercises(1, 1);
     const text = readFileSync(join(dirs[0], 'debug.txt'), 'utf8');
-    expect(text).toContain(`${a} X ${b}`);
-    expect(text).toContain(expectedBlockRow(b));
-    expect(text).toContain(String(a * b));
+    // the screen part of debug.txt (without the "#" comment lines) shows the drawing and the answer,
+    // and no multiplication printed as numbers
+    const screen = text.split('\n').filter((line) => !line.startsWith('#')).join('\n');
+    expect(screen).not.toMatch(/\d+\s*[Xx*]\s*\d+/);
+    const layout = expectedLayout(a, b);
+    expect(screen.split('\n').slice(0, layout.length)).toEqual(layout);
+    expect(screen).toContain(String(a * b));
     expect(readFileSync(join(dirs[0], 'screen.png')).subarray(0, 4)).toEqual(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
     expect(readFileSync(join(dirs[0], 'display-file.bin')).length).toBeGreaterThan(24);
   } finally {
