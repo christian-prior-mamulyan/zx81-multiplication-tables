@@ -102,17 +102,32 @@ export async function startTrainer(page, { program = 'trainer-seeded', pause = 1
   await enterPause(page, pause);
 }
 
+// Type the pause and Enter. The program must then take the input and move on (line 25 and later).
+// On a loaded CI machine a key press has been seen to go missing (the digit shown, Enter lost, the
+// program still waiting in line 20; not reproducible on a fast machine, and the ZX81's key debounce
+// is not the cause: the emulator accepts keys with no gap at all). So if the program has not moved
+// on, the missing key is typed again, up to twice. If it still does not start, fail at once and say
+// what the screen shows, instead of every later wait timing out.
 export async function enterPause(page, pause) {
-  for (const digit of String(pause)) await typeKey(page, digit);
+  const digits = String(pause);
+  for (const digit of digits) await typeKey(page, digit);
   await typeKey(page, 'Enter');
-  // The program must have taken the input and moved on (line 25 and later). If it did not, fail
-  // at once and say what the screen shows, instead of every later wait timing out.
-  const started = await page
-    .waitForFunction(() => window.zx81.line >= 25, undefined, { timeout: 30_000 })
-    .then(() => true, () => false);
-  if (!started) {
-    const info = await page.evaluate(() => ({ line: window.zx81.line, frame: window.zx81.frame, rows: window.zx81.getScreenRows().filter(Boolean) }));
-    throw new Error(`the trainer did not start after the pause input ${pause}: ${JSON.stringify(info)}`);
+  for (let retry = 0; retry <= 2; retry++) {
+    const started = await page
+      .waitForFunction(() => window.zx81.line >= 25, undefined, { timeout: 5_000 })
+      .then(() => true, () => false);
+    if (started) return;
+    const rows = await page.evaluate(() => window.zx81.getScreenRows());
+    if (retry === 2) {
+      const info = await page.evaluate(() => ({ line: window.zx81.line, frame: window.zx81.frame, rows: window.zx81.getScreenRows().filter(Boolean) }));
+      throw new Error(`the trainer did not start after the pause input ${pause}: ${JSON.stringify(info)}`);
+    }
+    if (rows.includes(`${digits}{L}`)) {
+      await typeKey(page, 'Enter'); // the digits are on screen, only Enter went missing
+    } else {
+      for (const digit of digits) await typeKey(page, digit); // the digits themselves went missing
+      await typeKey(page, 'Enter');
+    }
   }
 }
 
