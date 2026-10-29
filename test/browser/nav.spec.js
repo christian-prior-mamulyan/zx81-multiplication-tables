@@ -190,11 +190,48 @@ test('bar 3 on the game page counts the real steps and BASIC lines', async ({ pa
   await expect(page.locator('nav.nav-3 [data-badge="lines"]')).toHaveText(`${lines} lines`);
 });
 
-test('the game page has no navigation bar unless one is asked for', async ({ page }) => {
+test('the single game page holds the five alternative navigation bars, one div each', async ({ page }) => {
   await page.goto('/');
+  const holders = page.locator('#zx81-nav > div.nav-alt');
+  await expect(holders).toHaveCount(5);
+  for (const n of VARIANTS) {
+    const holder = page.locator(`#zx81-nav > div.nav-alt[data-alt="${n}"]`);
+    await expect(holder.locator(`nav.site-nav.nav-${n}`)).toHaveCount(1); // exactly one bar in its own div
+    await expect(holder.locator('.nav-caption')).toContainText(`Alternative ${n}`);
+    await expect(holder.locator('nav')).toBeVisible();
+    expect(await holder.locator('nav').evaluate((nav) => getComputedStyle(nav).display)).toBe('flex'); // horizontal
+  }
+  // in order, one below the other, all above the heading
+  const tops = [];
+  for (const n of VARIANTS) tops.push((await page.locator(`#zx81-nav > div.nav-alt[data-alt="${n}"]`).boundingBox()).y);
+  expect([...tops].sort((a, b) => a - b)).toEqual(tops);
+  const heading = await page.locator('h1').boundingBox();
+  expect(tops.at(-1)).toBeLessThan(heading.y);
+  // the game is still on the same page, below them
+  await expect(page.locator('#zx81-stage')).toBeVisible();
+  await expect(page.locator('#zx81-reload')).toBeVisible();
+});
+
+test('?nav=N shows one bar, ?nav=none none, anything else all five', async ({ page }) => {
+  await page.goto('/?nav=3');
+  await expect(page.locator('nav.site-nav')).toHaveCount(1);
+  await expect(page.locator('nav.nav-3')).toHaveCount(1);
+  await page.goto('/?nav=none');
   await expect(page.locator('nav.site-nav')).toHaveCount(0);
   await page.goto('/?nav=9');
-  await expect(page.locator('nav.site-nav')).toHaveCount(0);
+  await expect(page.locator('nav.site-nav')).toHaveCount(5);
+});
+
+test('with all five on the page the live bars follow the emulator and each bar keeps its own content', async ({ page }) => {
+  await page.goto('/?debug=1&program=trainer-seeded&speed=8');
+  await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
+  await expect(page.locator('nav.nav-4 [data-status="state"]')).toHaveText('RUNNING');
+  await expect(page.locator('nav.nav-4 [data-status="line"]')).toHaveText('20');
+  await page.locator('#zx81-listing .line').first().waitFor();
+  const lines = await page.locator('#zx81-listing .line').count();
+  await expect(page.locator('nav.nav-3 [data-badge="lines"]')).toHaveText(`${lines} lines`);
+  const texts = await page.locator('nav.site-nav').evaluateAll((navs) => navs.map((nav) => nav.innerText.replace(/\s+/g, ' ').trim()));
+  expect(new Set(texts).size).toBe(5);
 });
 
 test('links point to the site, the game sections and the repository', async ({ page }) => {

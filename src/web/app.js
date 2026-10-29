@@ -2,12 +2,12 @@ import { KEY_CODES, createEmulator } from '../emulator/emulator-adapter.js';
 import { KeyQueue } from './key-queue.js';
 import { mountKeypad } from './keypad.js';
 import { lineNumber, programLines, sourceUrl } from './listing.js';
-import { bindNav, buildNav } from './nav.js';
+import { NAV_DESIGNS, NAV_VARIANTS, bindNav, buildNav } from './nav.js';
 import { ScreenPresenter } from './screen-presenter.js';
 import { parseParams } from './url-params.js';
 
 let currentLine = null;
-let navBar = null;
+let navBars = []; // the navigation bars on the page (all five alternatives by default)
 
 // Mark the listing line the emulated ZX81 is executing right now.
 function highlight(line) {
@@ -26,7 +26,7 @@ async function showListing(program) {
     const listing = document.getElementById('zx81-listing');
     listing.replaceChildren();
     const lines = programLines(await response.text());
-    navBar?.update?.({ programLines: lines.length });
+    for (const bar of navBars) bar.update?.({ programLines: lines.length });
     for (const text of lines) {
       const element = document.createElement('span');
       element.className = 'line';
@@ -73,9 +73,22 @@ async function startPresenter(emulator, params) {
 
 async function main() {
   const params = parseParams(window.location.search);
-  if (params.nav !== null) {
-    navBar = buildNav(params.nav);
-    document.getElementById('zx81-nav').append(navBar);
+  // the single page holds the alternative navigation bars, each in its own div with a caption
+  const variants = params.nav === 'all' ? NAV_VARIANTS : params.nav === 'none' ? [] : [params.nav];
+  for (const variant of variants) {
+    const bar = buildNav(variant);
+    navBars.push(bar);
+    const holder = document.createElement('div');
+    holder.className = 'nav-alt';
+    holder.dataset.alt = String(variant);
+    if (variants.length > 1) {
+      const caption = document.createElement('p');
+      caption.className = 'nav-caption';
+      caption.textContent = `Alternative ${variant}: ${NAV_DESIGNS[variant].name}`;
+      holder.append(caption);
+    }
+    holder.append(bar);
+    document.getElementById('zx81-nav').append(holder);
   }
   const container = document.getElementById('zx81-screen');
   const status = document.getElementById('zx81-status');
@@ -92,7 +105,7 @@ async function main() {
   if (params.debug) window.zx81 = emulator;
 
   // the navigation bar (when one is chosen) shows the emulator's live state where its design has room for it
-  if (navBar) bindNav(navBar, emulator);
+  for (const bar of navBars) bindNav(bar, emulator);
 
   emulator.on('error', (error) => {
     status.textContent = `Error: ${error.message}`;

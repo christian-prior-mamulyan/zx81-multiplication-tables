@@ -19,8 +19,9 @@ export function parseParams(search) {
     renderer: params.get('renderer') === 'emulator' ? 'emulator' : 'screen',
     // show the on-screen number pad even without a touch screen (it appears on touch screens anyway)
     keypad: params.get('keypad') === '1',
-    // navigation bar design 1-5 (see design/navbars.html); none unless asked for
-    nav: NAV_VARIANTS.includes(Number(params.get('nav'))) ? Number(params.get('nav')) : null,
+    // Navigation bars: the page holds all five alternatives ("all", the default) so they can be
+    // compared in place; ?nav=1..5 shows one of them, ?nav=none shows none.
+    nav: params.get('nav') === 'none' ? 'none' : NAV_VARIANTS.includes(Number(params.get('nav'))) ? Number(params.get('nav')) : 'all',
     scenario: params.get('scenario') || 'normal',
     // emulator-native speed index 0-8 (4 = real time); only used when given
     speed: Number.isInteger(speed) && speed >= 0 && speed <= 8 ? speed : null,

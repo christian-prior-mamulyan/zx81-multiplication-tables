@@ -80,6 +80,21 @@ code {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
 
+/* the alternative navigation bars, one div each, with a small caption */
+.nav-alt {
+  margin: 0 0 0.75rem;
+}
+
+.nav-alt .site-nav {
+  margin-bottom: 0;
+}
+
+.nav-caption {
+  margin: 0 0 0.2rem;
+  font-size: 0.8rem;
+  color: var(--base01);
+}
+
 /* how to play */
 .howto ol {
   padding-left: 1.25rem;
