@@ -39,11 +39,12 @@ export function frameWhenScreenMatches(page, pattern) {
   );
 }
 
-// Press and release a key, leaving the emulator a few frames to see it.
-export async function typeKey(page, key) {
+// Press and release a key. The ZX81 scans its keyboard once per frame and needs the key held for a
+// few scans; on a slow machine 3 frames were not always enough, so hold for 8 and leave 4 after.
+export async function typeKey(page, key, { hold = 8 } = {}) {
   await page.evaluate((k) => window.zx81.keyDown(k), key);
   const before = await page.evaluate(() => window.zx81.frame);
-  await waitForFrame(page, before + 3);
+  await waitForFrame(page, before + hold);
   await page.evaluate((k) => window.zx81.keyUp(k), key);
-  await waitForFrame(page, before + 6);
+  await waitForFrame(page, before + hold + 4);
 }

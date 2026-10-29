@@ -63,7 +63,8 @@ export function parseExercise(rows) {
   return { rows: drawn, a: blockRows, b, blankAbove, answer };
 }
 
-export async function startTrainer(page, { program = 'trainer-seeded', pause = 1 } = {}) {
+// Open the trainer and wait until it waits for the pause input.
+export async function openTrainer(page, { program = 'trainer-seeded' } = {}) {
   await openProgram(page, program);
   // The prompt text appears at frame 2, but the program only waits for a key once INPUT shows its
   // cursor (inverse L, a few frames later). A key pressed before that is lost, so wait for the cursor.
@@ -71,8 +72,48 @@ export async function startTrainer(page, { program = 'trainer-seeded', pause = 1
     const rows = window.zx81.getScreenRows();
     return rows.includes(prompt) && rows.includes('{L}');
   }, PROMPT);
+}
+
+// Remember every change of the BASIC line being executed, with the emulated frame it happened in.
+// Install it BEFORE the pause is entered, so no part of the run is missed.
+export function recordLines(page) {
+  return page.evaluate(() => {
+    window.zx81LineLog = [];
+    window.zx81.on('line', ({ line, frame }) => window.zx81LineLog.push([line, frame]));
+  });
+}
+
+// How many emulated frames the program waited in line 150 (PAUSE P*50), from the line log.
+export async function pauseFrames(page) {
+  await page.waitForFunction(() => {
+    const log = window.zx81LineLog;
+    const at = log.findIndex(([line]) => line === 150);
+    return at >= 0 && at < log.length - 1;
+  });
+  return page.evaluate(() => {
+    const log = window.zx81LineLog;
+    const at = log.findIndex(([line]) => line === 150);
+    return log[at + 1][1] - log[at][1];
+  });
+}
+
+export async function startTrainer(page, { program = 'trainer-seeded', pause = 1 } = {}) {
+  await openTrainer(page, { program });
+  await enterPause(page, pause);
+}
+
+export async function enterPause(page, pause) {
   for (const digit of String(pause)) await typeKey(page, digit);
   await typeKey(page, 'Enter');
+  // The program must have taken the input and moved on (line 25 and later). If it did not, fail
+  // at once and say what the screen shows, instead of every later wait timing out.
+  const started = await page
+    .waitForFunction(() => window.zx81.line >= 25, undefined, { timeout: 30_000 })
+    .then(() => true, () => false);
+  if (!started) {
+    const info = await page.evaluate(() => ({ line: window.zx81.line, frame: window.zx81.frame, rows: window.zx81.getScreenRows().filter(Boolean) }));
+    throw new Error(`the trainer did not start after the pause input ${pause}: ${JSON.stringify(info)}`);
+  }
 }
 
 // Record exercises until `count` are complete (or the program has reached its final wait, line 220).
@@ -91,8 +132,15 @@ export function collectExercises(page, count) {
           if (cur) done.push(cur);
           cur = null;
         };
+        const startFrame = window.zx81.frame;
         const off = window.zx81.on('frame', ({ frame }) => {
           const rows = window.zx81.getScreenRows();
+          if (frame - startFrame > 20_000) {
+            // far more emulated time than ten exercises of up to 12 seconds need: give up with what we have
+            off();
+            resolve({ exercises: done, finished: false, printed, timedOut: { line: window.zx81.line, rows: rows.filter(Boolean) } });
+            return;
+          }
           const shown = parse(rows);
           if (rows.some((r) => /\d+\s*[Xx*]\s*\d+/.test(r))) printed = true;
 

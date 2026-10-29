@@ -56,10 +56,22 @@ test('clearing the screen is a hard cut: the picture is replaced by the blank sc
 
 test('drawing stays immediate: each block appears as soon as it is printed', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
-  await page.waitForFunction(() => window.zx81Presenter.log.some((rows) => rows[0]?.startsWith('[Q1]')));
-  const counts = await page.evaluate(() => window.zx81Presenter.log.slice(0, 40).map((rows) => (rows.join('').match(/\[Q1\]/g) ?? []).length));
-  // the number of blocks on screen never goes down while a picture is being drawn
-  const drawing = counts.slice(counts.findIndex((n) => n > 0));
+  const blocks = (rows) => (rows.join('').match(/\[Q1\]/g) ?? []).length;
+  await page.waitForFunction(
+    (source) => {
+      const count = new Function(`return ${source}`)();
+      return window.zx81Presenter.log.some((rows) => count(rows) >= 3);
+    },
+    blocks.toString(),
+  );
+  const counts = await page.evaluate((source) => {
+    const count = new Function(`return ${source}`)();
+    return window.zx81Presenter.log.map(count);
+  }, blocks.toString());
+  // the number of blocks on screen never goes down while a picture is being drawn (the entries
+  // before the first block are the pause prompt and the typed digits, which vary with machine speed)
+  const first = counts.findIndex((n) => n > 0);
+  const drawing = counts.slice(first, first + 40);
   for (let i = 1; i < drawing.length; i++) expect(drawing[i]).toBeGreaterThanOrEqual(drawing[i - 1]);
   expect(Math.max(...drawing)).toBeGreaterThan(2);
 });

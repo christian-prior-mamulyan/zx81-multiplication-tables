@@ -2,7 +2,16 @@
 // The seeded variant is identical to the trainer except RAND becomes RAND 1.
 import { expect, test } from './fixtures.js';
 import { frameWhenScreenMatches, openProgram } from './helpers.js';
-import { collectExercises, expectedExercises, expectedLayout, startTrainer } from './trainer-helpers.js';
+import {
+  collectExercises,
+  enterPause,
+  expectedExercises,
+  expectedLayout,
+  openTrainer,
+  pauseFrames,
+  recordLines,
+  startTrainer,
+} from './trainer-helpers.js';
 
 test('runs exactly ten exercises with correct operands, drawing and answers', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
@@ -76,19 +85,20 @@ test('a gap after every fifth block across and a blank row after the fifth row d
 });
 
 test('the pause input is in seconds', async ({ context }) => {
-  // PAUSE P*50 waits P*50 ZX81 frames and the ZX81 shows 50 frames per second. The time between the
-  // last change of the drawing and the answer is P seconds plus an overhead (finishing the last
-  // row, printing the blank line and the answer). The ZX81's own frame counter does not tick in
-  // perfect step with the emulator's frames (frame lengths vary while BASIC is busy), so a few
-  // percent of jitter is normal: measured overheads of 7 to 22 frames for pauses of 1, 3 and 12 s.
+  // PAUSE P*50 (line 150) waits P*50 ZX81 frames, and the ZX81 shows 50 frames per second. The wait
+  // is measured directly: the number of emulated frames the program spent in line 150, taken from
+  // the emulator's own "BASIC line changed" events. The recorder is installed before the pause is
+  // entered, so it cannot start late. The ZX81's frame counter is not perfectly in step with the
+  // emulator's frames while BASIC is busy, hence a small tolerance.
   for (const pause of [1, 3, 12]) {
     const page = await context.newPage();
-    await startTrainer(page, { pause });
-    const { exercises } = await collectExercises(page, 1);
+    await openTrainer(page);
+    await recordLines(page);
+    await enterPause(page, pause);
+    const frames = await pauseFrames(page);
     await page.close();
-    const gap = exercises[0].answerAt - exercises[0].drawnAt;
-    expect(gap, `pause ${pause} s`).toBeGreaterThanOrEqual(pause * 50 - 5);
-    expect(gap, `pause ${pause} s`).toBeLessThanOrEqual(pause * 50 * 1.04 + 30);
+    const expected = pause * 50;
+    expect(Math.abs(frames - expected), `pause ${pause} s took ${frames} frames, expected ${expected}`).toBeLessThanOrEqual(Math.max(4, expected * 0.04));
   }
 });
 
