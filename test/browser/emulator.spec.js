@@ -66,7 +66,10 @@ test('semigraphics are emitted as exact ZX81 codes', async ({ page }) => {
 test('semigraphics are rendered by the emulator (pixel regression)', async ({ page }) => {
   await openProgram(page, 'graphics');
   await frameWhenScreenMatches(page, /\[Q138\]/);
-  await waitForFrame(page, (await page.evaluate(() => window.zx81.frame)) + 5);
+  // the program ends with its report line "0/70"; wait for it, then give the canvas (painted at
+  // most every 20 ms of wall-clock time) plenty of frames to catch up before freezing the emulator
+  await frameWhenScreenMatches(page, /^0\/70$/);
+  await waitForFrame(page, (await page.evaluate(() => window.zx81.frame)) + 60);
   await pauseEmulator(page);
   // Compare the emulator's own canvas bitmap (via the adapter), not a screenshot of the page:
   // a page screenshot changes size with sub-pixel layout, the canvas bitmap does not.

@@ -39,12 +39,32 @@ export function frameWhenScreenMatches(page, pattern) {
   );
 }
 
-// Press and release a key. The ZX81 scans its keyboard once per frame and needs the key held for a
-// few scans; on a slow machine 3 frames were not always enough, so hold for 8 and leave 4 after.
-export async function typeKey(page, key, { hold = 8 } = {}) {
-  await page.evaluate((k) => window.zx81.keyDown(k), key);
-  const before = await page.evaluate(() => window.zx81.frame);
-  await waitForFrame(page, before + hold);
-  await page.evaluate((k) => window.zx81.keyUp(k), key);
-  await waitForFrame(page, before + hold + 4);
+// Press and release a key, timed exactly in EMULATED frames. The whole press happens inside the
+// page, driven by the emulator's own frame events, so the number of frames the key is held does not
+// depend on how fast the browser or the test runner is. (Timing it from outside once held keys for
+// hundreds of frames on a slow CI machine: the ZX81 then repeated the character, "111", and a key
+// still held when a PAUSE starts ends the PAUSE at once.) Held for `hold` frames, then `gap` frames
+// of rest.
+export function typeKey(page, key, { hold = 6, gap = 4 } = {}) {
+  return page.evaluate(
+    ([k, holdFrames, gapFrames]) =>
+      new Promise((resolve) => {
+        const machine = window.zx81;
+        const after = (frames, then) => {
+          const start = machine.frame;
+          const off = machine.on('frame', ({ frame }) => {
+            if (frame >= start + frames) {
+              off();
+              then();
+            }
+          });
+        };
+        machine.keyDown(k);
+        after(holdFrames, () => {
+          machine.keyUp(k);
+          after(gapFrames, resolve);
+        });
+      }),
+    [key, hold, gap],
+  );
 }
