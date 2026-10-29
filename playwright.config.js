@@ -6,7 +6,7 @@ const port = Number(process.env.ZX81_PORT ?? 8765);
 
 export default defineConfig({
   testDir: 'test/browser',
-  timeout: 90_000,
+  timeout: 240_000, // the trainer runs 10 exercises in the emulator; slow CI runners need the headroom
   // one baseline for every operating system; a substituted glyph changes far more than 0.2% of the pixels
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
   expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.002 } },

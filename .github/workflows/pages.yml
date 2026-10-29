@@ -2,7 +2,7 @@ name: pages
 
 on:
   push:
-    branches: [main]
+    branches: [exploration]
   workflow_dispatch:
 
 permissions:
