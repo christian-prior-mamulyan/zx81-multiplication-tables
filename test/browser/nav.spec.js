@@ -1,5 +1,5 @@
 // The five navigation bar designs in Solarized orange.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 
 const ORANGE = 'rgb(203, 75, 22)'; // Solarized orange #cb4b16
 

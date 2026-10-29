@@ -1,6 +1,6 @@
 // Trainer behaviour: tests of the BASIC program itself (not of the emulator).
 // The seeded variant is identical to the trainer except RAND becomes RAND 1.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { frameWhenScreenMatches, openProgram } from './helpers.js';
 import { collectExercises, expectedExercises, expectedLayout, startTrainer } from './trainer-helpers.js';
 
@@ -75,14 +75,14 @@ test('a gap after every fifth block across and a blank row after the fifth row d
   }
 });
 
-test('the pause input is in seconds', async ({ browser }) => {
+test('the pause input is in seconds', async ({ context }) => {
   // PAUSE P*50 waits P*50 ZX81 frames and the ZX81 shows 50 frames per second. The time between the
   // last change of the drawing and the answer is P seconds plus an overhead (finishing the last
   // row, printing the blank line and the answer). The ZX81's own frame counter does not tick in
   // perfect step with the emulator's frames (frame lengths vary while BASIC is busy), so a few
   // percent of jitter is normal: measured overheads of 7 to 22 frames for pauses of 1, 3 and 12 s.
   for (const pause of [1, 3, 12]) {
-    const page = await browser.newPage();
+    const page = await context.newPage();
     await startTrainer(page, { pause });
     const { exercises } = await collectExercises(page, 1);
     await page.close();
@@ -92,10 +92,10 @@ test('the pause input is in seconds', async ({ browser }) => {
   }
 });
 
-test('the delay is measured in emulated frames, not wall-clock time', async ({ browser }) => {
+test('the delay is measured in emulated frames, not wall-clock time', async ({ context }) => {
   const frames = [];
   for (const speed of [8, 6]) {
-    const page = await browser.newPage();
+    const page = await context.newPage();
     await openProgram(page, 'delay', { speed });
     frames.push(await frameWhenScreenMatches(page, /^DONE$/));
     await page.close();

@@ -1,9 +1,25 @@
 <!doctype html>
-<html lang="en">
+<!-- data-fa-kit-code enables Font Awesome Pro icons (<wa-icon>) once the kit loads. The kit code is
+     domain-locked, so it is safe in public HTML (the same pattern as the other cprima sites). Pro
+     font files and the npm token are never committed. The page works without the kits: they only
+     add styling and icons. -->
+<html lang="en" data-fa-kit-code="5df958b77d">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#cb4b16">
   <title>ZX81 Multiplication Trainer</title>
+
+  <!-- Web Awesome: theme, utilities, native reset, then the autoloader. The stylesheets load
+       without blocking the first paint; if a kit is unreachable the page keeps its own styles. -->
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/themes/default.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/utilities.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/styles/native.css" media="print" onload="this.media='all'">
+  <!-- async: a module script is otherwise run in document order, so a kit server that hangs would
+       keep the game's own script (app.js, below) from starting. -->
+  <script type="module" async src="https://ka-p.webawesome.com/kit/9d55e66325f84b80/webawesome@3.12.0/webawesome.loader.js"></script>
+
+  <!-- Last, so the identity overrides Web Awesome's defaults. -->
   <link rel="stylesheet" href="./web/app.css">
   <link rel="stylesheet" href="./web/nav.css">
 </head>
@@ -25,13 +41,19 @@
 
     <div class="controls">
       <span id="zx81-status" role="status"></span>
-      <button id="zx81-reload" type="button">Reload</button>
+      <button id="zx81-reload" type="button">
+        <wa-icon name="rotate-right" aria-hidden="true"></wa-icon>
+        Reload
+      </button>
     </div>
 
     <div id="zx81-stage">
       <canvas id="zx81-display" width="640" height="480" aria-label="ZX81 screen"></canvas>
       <div id="zx81-screen"></div>
     </div>
+
+    <!-- number pad for touch screens: the ZX81 keyboard without a keyboard -->
+    <div id="zx81-keypad" class="keypad" role="group" aria-label="Number pad" hidden></div>
 
     <section id="zx81-program" hidden>
       <h2>The program</h2>
@@ -41,6 +63,7 @@
 
     <aside id="zx81-debug" hidden></aside>
   </main>
+  <noscript><p>This page runs a ZX81 emulator and needs JavaScript.</p></noscript>
   <script type="module" src="./web/app.js"></script>
 </body>
 </html>

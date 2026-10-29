@@ -85,8 +85,7 @@ export function collectExercises(page, count) {
         const parse = new Function(`return ${parseSource}`)();
         const done = [];
         let cur = null;
-        let lastDrawing = '';
-        let lastChangeAt = 0;
+        let firstSeen = new Map(); // drawing -> first frame it was on screen, within the current exercise
         let printed = false; // true if the multiplication was ever printed as numbers ("7 X 9")
         const close = () => {
           if (cur) done.push(cur);
@@ -104,10 +103,7 @@ export function collectExercises(page, count) {
           }
           if (shown) {
             const drawing = JSON.stringify(shown.rows);
-            if (drawing !== lastDrawing) {
-              lastDrawing = drawing;
-              lastChangeAt = frame;
-            }
+            if (!firstSeen.has(drawing)) firstSeen.set(drawing, frame);
             if (!cur) {
               cur = { a: 0, b: 0, rows: [], blankAboveAnswer: false, answer: null, answerAt: null, drawnAt: null };
             }
@@ -117,13 +113,15 @@ export function collectExercises(page, count) {
             if (shown.answer !== null) {
               if (cur.answerAt === null) {
                 cur.answerAt = frame;
-                cur.drawnAt = lastChangeAt; // the drawing was complete when the answer appeared
+                // the first frame that showed the finished drawing (a one-frame dip in between, as a
+                // half-updated display can cause, does not move it)
+                cur.drawnAt = firstSeen.get(drawing);
               }
               cur.answer = shown.answer; // keep the latest value: the final one is the complete number
               cur.blankAboveAnswer = shown.blankAbove;
             }
           } else {
-            lastDrawing = '';
+            firstSeen = new Map();
           }
           // after the tenth exercise the screen is cleared and the program waits in line 220 (it never ends, so no report is shown)
           const finished = window.zx81.line === 220;

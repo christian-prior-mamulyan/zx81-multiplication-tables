@@ -1,14 +1,14 @@
 // GitHub Pages project sites are served below /REPOSITORY/. The server also exposes the site
 // under /zx81-trainer/; every request the page makes must stay inside that prefix and succeed.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { frameWhenScreenMatches } from './helpers.js';
 
-test('the site works under a subdirectory (no root-relative requests)', async ({ page }) => {
+test('the site works under a subdirectory (no root-relative requests)', async ({ page, baseURL }) => {
   const outside = [];
   const failed = [];
   page.on('request', (request) => {
     const { pathname } = new URL(request.url());
-    if (!pathname.startsWith('/zx81-trainer/')) outside.push(pathname);
+    if (request.url().startsWith(baseURL) && !pathname.startsWith('/zx81-trainer/')) outside.push(pathname); // same-origin requests only
   });
   page.on('response', (response) => {
     if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`);

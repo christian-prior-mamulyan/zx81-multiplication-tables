@@ -17,6 +17,8 @@ export function parseParams(search) {
     // "screen" (default): the page draws the ZX81 screen itself from its contents, with a hard cut
     // on clear; "emulator": show the emulator's own TV-raster picture unchanged
     renderer: params.get('renderer') === 'emulator' ? 'emulator' : 'screen',
+    // show the on-screen number pad even without a touch screen (it appears on touch screens anyway)
+    keypad: params.get('keypad') === '1',
     // navigation bar design 1-5 (see design/navbars.html); none unless asked for
     nav: NAV_VARIANTS.includes(Number(params.get('nav'))) ? Number(params.get('nav')) : null,
     scenario: params.get('scenario') || 'normal',

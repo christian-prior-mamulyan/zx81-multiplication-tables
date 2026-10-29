@@ -1,5 +1,5 @@
 // The web shell: URL parameters, debug mode, mock emulator, GitHub Pages paths.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { frameWhenScreenMatches, typeKey } from './helpers.js';
 
 test('the normal URL launches the trainer without any debug surface', async ({ page }) => {

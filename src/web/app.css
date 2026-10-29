@@ -1,24 +1,50 @@
+/* ZX81 multiplication trainer: visual identity and layout.
+ *
+ * Solarized Light with an orange bar across the top, like the other cprima sites. Light only, on
+ * purpose: the identity is the light one. Solarized values are the published ones.
+ * Mobile first: one column, fluid screen, big touch targets, notch-safe.
+ * Loaded after the Web Awesome kit, so these rules win over its defaults.
+ */
+
 :root {
-  --bg: #fdf6e3;
-  --fg: #586e75;
-  --accent: #268bd2;
-  --panel: #eee8d5;
+  --base3: #fdf6e3;
+  --base2: #eee8d5;
+  --base1: #93a1a1;
+  --base01: #586e75; /* text: 5:1 on base3, the less contrasty base00 is only 4.1:1 */
+  --base02: #073642;
+  --orange: #cb4b16;
+  --bar-height: 6px;
+  --gutter: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #002b36;
-    --fg: #93a1a1;
-    --panel: #073642;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  padding: 1rem 16px;
-  background: var(--bg);
-  color: var(--fg);
-  font: 1rem/1.5 system-ui, sans-serif;
+  /* room for the fixed bar, plus the notch on phones */
+  padding: calc(var(--bar-height) + env(safe-area-inset-top) + 1.25rem) var(--gutter) calc(3rem + env(safe-area-inset-bottom));
+  background: var(--base3);
+  color: var(--base01);
+  font: 1rem/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* the mark: an orange rectangle across the top, the same on every page, fixed so it never scrolls away */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: calc(var(--bar-height) + env(safe-area-inset-top));
+  background: var(--orange);
+  z-index: 10;
 }
 
 main {
@@ -26,15 +52,90 @@ main {
   margin: 0 auto;
 }
 
-h1 {
-  font-size: 1.4rem;
+h1,
+h2 {
+  color: var(--base02);
+  line-height: 1.25;
 }
 
+h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.25rem, 5vw, 1.6rem);
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+a {
+  color: #268bd2;
+}
+
+a:hover {
+  color: var(--orange);
+}
+
+code {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+/* how to play */
+.howto ol {
+  padding-left: 1.25rem;
+}
+
+.howto li {
+  margin: 0 0 0.35rem;
+}
+
+/* Reload: above the emulator, aligned to the right edge of the screen */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+#zx81-status {
+  font-size: 0.9rem;
+}
+
+#zx81-reload,
+.keypad button {
+  font: inherit;
+  color: var(--base01);
+  background: #fffdf6;
+  border: 2px solid var(--base1);
+  border-radius: 0.5rem;
+  touch-action: manipulation; /* no double-tap zoom delay on touch screens */
+  -webkit-tap-highlight-color: transparent;
+}
+
+#zx81-reload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem; /* 44px: a comfortable touch target */
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+}
+
+#zx81-reload:hover,
+#zx81-reload:focus-visible {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* the emulated screen: fluid, 4:3 */
 #zx81-stage {
   position: relative;
-  width: 640px;
-  max-width: 100%;
-  background: #fff;
+  width: 100%;
+  background: #f3f3f3;
+  border: 2px solid var(--base2);
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
 
 /* our own drawing of the ZX81 screen */
@@ -58,8 +159,7 @@ h1 {
 }
 
 #zx81-screen {
-  width: 640px;
-  max-width: 100%;
+  width: 100%;
   background: #fff;
 }
 
@@ -72,63 +172,92 @@ h1 {
 
 #zx81-screen pre {
   margin: 0;
-  min-height: 480px;
+  min-height: 15rem;
   padding: 8px;
   background: #fff;
   color: #000;
 }
 
-.howto h2 {
-  font-size: 1.1rem;
+/* number pad for touch screens */
+.keypad {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  width: min(100%, 22rem);
+  margin: 1rem auto 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.howto ol {
-  padding-left: 1.25rem;
+@media (pointer: coarse), (hover: none) {
+  .keypad:not([hidden]) {
+    display: grid;
+  }
 }
 
-/* above the emulator, Reload aligned to the right edge of the screen */
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-  width: 640px;
-  max-width: 100%;
-  margin: 0.5rem 0;
+.keypad.show:not([hidden]) {
+  display: grid;
 }
 
-#zx81-reload {
-  padding: 0.4rem 1rem;
-  font: inherit;
+.keypad button {
+  min-height: 3.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.keypad button.pressed {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--base3);
+}
+
+.keypad .key-enter {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* landscape phones are short: keep the screen and the pad both on view */
+@media (orientation: landscape) and (max-height: 32rem) {
+  .keypad {
+    grid-template-columns: repeat(6, 1fr);
+    width: 100%;
+  }
+  .keypad button {
+    min-height: 2.75rem;
+    font-size: 1.25rem;
+  }
+}
+
+/* the program listing */
+#zx81-listing {
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--base2);
+  color: var(--base01);
+  font: 0.85rem/1.5 ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
 
 #zx81-listing .line {
   display: block;
+  white-space: pre;
 }
 
 /* the line the emulated ZX81 is executing, in Solarized orange */
 #zx81-listing .line.current {
-  background: #cb4b16;
-  color: #fdf6e3;
+  background: var(--orange);
+  color: var(--base3);
 }
 
-#zx81-listing {
-  overflow-x: auto;
-  padding: 0.75rem 1rem;
-  background: var(--panel);
-  color: var(--fg);
-  font: 0.9rem/1.5 ui-monospace, monospace;
-}
-
-.hint,
-#zx81-status {
+.hint {
   font-size: 0.9rem;
 }
 
+/* developer panel (?debug=1) */
 #zx81-debug {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--panel);
+  background: var(--base2);
   font-size: 0.85rem;
 }
 
@@ -143,6 +272,14 @@ h1 {
   margin: 0;
 }
 
+#zx81-debug input {
+  font-size: 16px; /* below 16px iOS zooms the page when an input gets the focus */
+}
+
 #zx81-debug pre {
   overflow-x: auto;
+}
+
+#zx81-screen pre#mock-screen {
+  min-height: 15rem;
 }

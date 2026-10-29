@@ -7,13 +7,36 @@ never reimplemented in JavaScript.
 The use: a player says the answer **out loud** before the program shows it. Ten multiplication
 exercises per run. Each is drawn as a rows of b quarter blocks (ZX81 semigraphics code 1, so every
 unit is visibly separated), with a gap after every fifth block across and a blank line after the
-fifth row. The program then waits for a player-specific pause (1 to 99, about 2 seconds per step),
-prints a blank line and shows the answer.
+fifth row. The multiplication is not printed as numbers; the player reads it off the drawing. The
+program then waits for the player's pause (1 to 99 seconds), prints a blank line and shows the
+answer. After ten exercises it clears the screen and tells the player to press Reload.
+
+The page works in desktop and mobile browsers.
 
 **Status:** the trainer in `src/basic/trainer.bas` follows the layout described by the project owner
 (quarter blocks, groups of five, blank line above the result). It is still a reconstruction from
 memory. The drawing lives in lines 80-140 and the glyph in line 100, so it can be changed in a few
-lines.
+lines. The BASIC is kept plain (no FAST/SLOW tricks); smoothing the display is the job of the
+page's JavaScript.
+
+## Web and mobile
+
+- **Identity:** Solarized Light with an orange bar across the top, like the other cprima sites.
+- **Kits:** the page loads [Web Awesome](https://webawesome.com/) (theme, utilities, native
+  reset, loader) and Font Awesome Pro (via `data-fa-kit-code`) from your kits, the same way the
+  sibling sites do. The kit code is domain-locked, so it is safe in public HTML; Pro font files
+  and the npm token are never committed (a test checks that). The kits load without blocking: the
+  stylesheets use `media="print" onload=...` and the loader script is `async`, so a slow or
+  unreachable kit never keeps the game from starting. **The kits must allow the domain
+  `career.cprima.net`** (kit settings at fontawesome.com and webawesome.com), otherwise the page
+  simply looks as it does without them.
+- **Phones:** one fluid column, the screen fills the width at 4:3, notch-safe spacing, touch
+  targets of at least 44 px, no double-tap zoom delay, and an on-screen **number pad** (digits,
+  delete, Enter) on touch screens, because a canvas shows no soft keyboard. `?keypad=1` shows the
+  pad on desktop too.
+- **Keys:** real keys and the pad go through one queue (`src/web/key-queue.js`). The ZX81 reads
+  one key at a time, once per frame, so every key is held at least 60 ms and the next key waits
+  25 ms; this keeps fast typing and quick taps from being lost.
 
 ## Run it locally
 

@@ -1,5 +1,5 @@
 // Emulator integration: ROM boots, programs load, BASIC runs, graphics render, keys work.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { displayFileRows } from '../../src/emulator/zx81-text.js';
 import { frameWhenScreenMatches, openProgram, pauseEmulator, screenRows, typeKey, waitForFrame } from './helpers.js';
 

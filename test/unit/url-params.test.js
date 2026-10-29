@@ -8,6 +8,7 @@ test('defaults launch the trainer with the real emulator', () => {
     debug: false,
     emulator: 'real',
     renderer: 'screen',
+    keypad: false,
     nav: null,
     scenario: 'normal',
     speed: null,

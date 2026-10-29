@@ -1,7 +1,7 @@
 // The page draws the ZX81 screen itself (screen-presenter.js): glyphs from the ROM, no raster
 // skew, a hard cut when the program clears the screen.
-import { expect, test } from '@playwright/test';
-import { frameWhenScreenMatches, typeKey } from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { frameWhenScreenMatches } from './helpers.js';
 import { startTrainer } from './trainer-helpers.js';
 
 // colour of one canvas pixel as [r, g, b]
@@ -72,7 +72,7 @@ test('the real keyboard reaches the emulated ZX81 from anywhere on the page', as
   await page.waitForFunction(() => window.zx81Presenter.log.some((rows) => rows.some((row) => row.includes('4'))));
   // the key is shown on the page canvas as well
   await frameWhenScreenMatches(page, /^4\{L\}$/);
-  await typeKey(page, 'Backspace');
+  await page.keyboard.press('Backspace'); // a real key, held long enough by the page (delete is shift+0)
   await frameWhenScreenMatches(page, /^\{L\}$/);
 });
 

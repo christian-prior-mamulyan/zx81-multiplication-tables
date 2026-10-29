@@ -30,6 +30,8 @@ const KEY_SCRIPT = [
 const LATEST_FIRST_FRAME = 30; // the handler must be installed this early or the frame numbers are not exact
 
 export async function captureWith(page, baseUrl, outDir) {
+  // the page's third-party kits (Web Awesome, Font Awesome) play no part in the capture
+  await page.route(/^https?:\/\/[^/]*(webawesome|fontawesome)\.com\//, (route) => route.abort());
   await page.goto(`${baseUrl}/?debug=1&program=trainer-seeded&speed=4`);
   await page.waitForFunction(() => window.zx81?.state === 'running');
 

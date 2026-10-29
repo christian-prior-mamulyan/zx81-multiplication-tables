@@ -2,17 +2,17 @@
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { captureWith } from '../../tools/capture-screen.js';
 import { expectedExercises, expectedLayout } from './trainer-helpers.js';
 
-test('capture is deterministic and shows the known first exercise', async ({ browser, baseURL }) => {
+test('capture is deterministic and shows the known first exercise', async ({ context, baseURL }) => {
   const dirs = [];
   const results = [];
   for (let run = 0; run < 2; run++) {
     const dir = mkdtempSync(join(tmpdir(), 'zx81-capture-'));
     dirs.push(dir);
-    const page = await browser.newPage();
+    const page = await context.newPage();
     results.push(await captureWith(page, baseURL, dir));
     await page.close();
   }
