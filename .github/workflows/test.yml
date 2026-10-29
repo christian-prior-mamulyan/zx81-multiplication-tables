@@ -1,0 +1,45 @@
+name: test
+
+on:
+  push:
+    branches: [main, exploration]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ZX81_PY: python3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: extractions/setup-just@v2
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - run: just test
+      - run: just test-browser
+
+      - name: Capture artifacts
+        run: just capture
+        env:
+          ZX81_PY: python3
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zx81-capture-and-reports
+          path: |
+            artifacts/
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore

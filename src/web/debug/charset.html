@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZX81 character set</title>
+  <link rel="stylesheet" href="../web/app.css">
+  <style>
+    table { border-collapse: collapse; }
+    th, td { padding: 0.25rem 0.75rem; border-bottom: 1px solid var(--panel); text-align: left; vertical-align: middle; }
+    canvas { background: #fff; image-rendering: pixelated; }
+    code { font-family: ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ZX81 semigraphics</h1>
+    <p>Every glyph below is drawn from the 8×8 bitmaps in the original ZX81 ROM (<code>emulator/roms/zx81.rom</code>, character set at 0x1E00; inverse characters are the same bitmap with all bits flipped). Nothing here is a Unicode approximation. The emulator rendering of the same characters is shown at the bottom.</p>
+    <table id="charset">
+      <thead>
+        <tr><th>Code</th><th>Glyph</th><th>Binary</th><th>zxtext2p escape</th><th>BASIC</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <h2>Keyboard entry</h2>
+    <p>Press <b>SHIFT+9</b> to switch to GRAPHICS mode (the cursor shows <b>G</b>). In GRAPHICS mode a shifted key gives the graphics symbol printed on its keycap, and an unshifted key gives the inverse of its normal character. The keycap-to-glyph assignment is printed on the ZX81 keyboard; it is not restated here. <b>SHIFT+9</b> again leaves the mode. <code>CHR$ code</code> works for every row in the table.</p>
+    <h2>Emulator rendering</h2>
+    <p>The <code>graphics</code> program prints codes 0–10 on the first line and 128–138 on the second.</p>
+    <div id="zx81-screen"><iframe id="zx81-reference" title="ZX81 graphics program" width="640" height="480" scrolling="no" src="../emulator/zx81.html?tzx=../tapes/graphics.p&amp;scale=2"></iframe></div>
+  </main>
+  <script type="module" src="../web/charset.js"></script>
+</body>
+</html>

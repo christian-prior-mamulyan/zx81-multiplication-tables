@@ -1,0 +1,18 @@
+{
+  "name": "zx81-multiplication-tables",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A ZX81 BASIC multiplication trainer, run in an emulated ZX81 in the browser",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "bash tools/build-site.sh",
+    "dev": "just dev",
+    "test": "node --test \"test/unit/*.test.js\"",
+    "test:browser": "playwright test",
+    "capture": "node tools/capture-screen.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

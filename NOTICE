@@ -1,0 +1,21 @@
+zx81-multiplication-tables
+Copyright 2026 Christian Prior-Mamulyan
+
+Licensed under the Apache License, Version 2.0 (see LICENSE) for the project's own files.
+
+Third-party components, each under its own licence (not Apache-2.0):
+
+1. ZX81 emulator (src/emulator/zx81/, copied to public/emulator/ by the build)
+   https://github.com/hammingweight/zx81-javascript-emulator, commit 7b11a9cb11baffea9240ee88876be875e1152c0a
+   GNU General Public License, version 2 (src/emulator/zx81/LICENSE).
+   Derived from JtyOne by Simon Holdsworth. This project's changes to it are marked "PATCH n" in
+   zx81_emu.js and listed in src/emulator/zx81/PATCHES.md. The ZX81 ROM image
+   (roms/zx81.rom) is distributed with that emulator.
+
+2. ZXText2P (tools/zxtext2p/)
+   Copyright 2002 Chris Cowley, based on code from zmakebas by Russell Marks.
+   GNU General Public License (tools/zxtext2p/gpl.txt). Used at build time to turn ZX81 BASIC text
+   into .P program images; the tool itself is not part of the deployed site.
+
+Combining Apache-2.0 files with the GPL-2.0 emulator in one deployed site is a licensing decision
+for the project owner; this notice only records what is included.
