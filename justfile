@@ -31,6 +31,17 @@ test-browser: build
 capture: build
     node tools/capture-screen.js
 
+# artifacts/rushes: a picture of the page for every change of the screen or the BASIC line, plus manifest.json
+rushes: build
+    node tools/capture-rushes.js
+
+# artifacts/demo.gif cut from the rushes by tools/gif-playbook.json (needs ffmpeg on the PATH)
+gif-edit:
+    node tools/edit-gif.js
+
+# the README animation: capture the rushes, then cut them
+gif: rushes gif-edit
+
 # --- code quality -------------------------------------------------------------------------
 
 # every npm-based check: ESLint, Stylelint, html-validate, Prettier, TypeScript, knip

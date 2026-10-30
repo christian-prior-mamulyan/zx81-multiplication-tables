@@ -1,0 +1,10 @@
+{
+  "output": { "width": 840, "endHoldMs": 2500, "minMs": 40 },
+  "rules": [
+    { "phase": "input", "pictures": "all", "timing": "realtime" },
+    { "phase": "drawing", "exercise": 1, "pictures": "all", "ms": 120 },
+    { "phase": "drawing", "exercise": 2, "pictures": "screen-changes", "ms": 60 },
+    { "phase": "pause", "pictures": "first", "timing": "realtime", "speed": 2 },
+    { "phase": "answer", "pictures": "all", "timing": "realtime", "speed": 2 }
+  ]
+}

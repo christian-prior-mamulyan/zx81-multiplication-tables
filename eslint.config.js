@@ -67,7 +67,7 @@ export default [
     rules: { 'no-console': 'off' }, // command-line tools report to the terminal
   },
   {
-    files: ['test/browser/**/*.js', 'tools/capture-screen.js'],
+    files: ['test/browser/**/*.js', 'tools/capture-screen.js', 'tools/capture-rushes.js'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
     rules: { 'no-shadow': 'off' }, // page.evaluate callbacks reuse the names of outer helpers on purpose
   },
