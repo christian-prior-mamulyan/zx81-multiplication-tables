@@ -17,7 +17,7 @@ export const NAV_DESIGNS = {
   1: { name: 'Brand and links', content: 'brand, Play, How to play, The program, GitHub' },
   2: { name: 'Where am I', content: 'breadcrumb: career.cprima.net / ZX81 multiplication tables, source link' },
   3: { name: 'Sections', content: 'tabs Play, How to play (steps), The program (lines)' },
-  4: { name: 'Game status', content: 'title, live state, BASIC line, emulated time, listing link' },
+  4: { name: 'Game status', content: 'ZX81 title, live state, BASIC line, emulated time, listing link' },
   5: { name: 'ZX81 menu', content: 'numbered keyword menu: 1 PLAY, 2 HOW TO PLAY, 3 LISTING, 4 SOURCE' },
 };
 
@@ -99,7 +99,7 @@ const designs = {
     const nav = el(
       'nav',
       { 'aria-label': 'Game status' },
-      el('span', { class: 'title' }, 'ZX81 TRAINER'),
+      el('span', { class: 'title' }, 'ZX81'),
       el('dl', {}, cell('state'), cell('line'), cell('time')),
       el('a', { class: 'action', href: '#zx81-program' }, 'LISTING'),
     );

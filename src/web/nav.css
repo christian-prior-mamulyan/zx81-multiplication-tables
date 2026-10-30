@@ -160,40 +160,44 @@
   font-weight: 700;
 }
 
-/* 4 - Game status: a dark monospace status bar with an orange top line and live values */
+/* 4 - Game status: a monospace status bar, Solarized orange all over, with a dark rule below and
+   live values. Label and value sit side by side; everything is large bold text, so cream on
+   orange (about 4.3:1) is enough. The labels are set apart as small inverse tags. */
 .nav-4 {
-  background: var(--night);
-  border-top: 4px solid var(--orange);
+  background: var(--orange);
+  border-bottom: 4px solid var(--night);
   padding: 0 0.5rem 0 1rem;
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  letter-spacing: 0.05em;
-  gap: 1.5rem;
+  letter-spacing: 0.03em;
+  gap: 1rem;
 }
 .nav-4 .title {
   color: var(--cream);
   padding: 0.7rem 0;
 }
 .nav-4 dl {
-  gap: 1.5rem;
+  gap: 1rem;
 }
 .nav-4 dl > div {
   display: flex;
-  flex-direction: column;
-  padding: 0.35rem 0;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
 }
 .nav-4 dt {
-  color: var(--mist);
-  font-size: 0.8rem;
+  padding: 0 0.4rem;
+  background: var(--cream);
+  color: var(--orange);
   text-transform: uppercase;
 }
 .nav-4 dd {
   margin: 0;
-  min-width: 4.5ch;
+  min-width: 4ch;
   color: var(--cream);
 }
 .nav-4 .action {
   margin-left: auto;
-  background: var(--orange);
+  background: var(--night);
   color: var(--cream);
 }
 

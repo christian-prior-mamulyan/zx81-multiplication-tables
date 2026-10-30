@@ -64,7 +64,7 @@ test('every bar has its own content', async ({ page }) => {
   expect(all[1]).toEqual(expect.arrayContaining(['cprima', 'Play', 'How to play', 'The program', 'GitHub']));
   expect(all[2]).toEqual(expect.arrayContaining(['career.cprima.net', 'ZX81 multiplication tables', 'Source on GitHub']));
   expect(all[3].join(' ')).toMatch(/Play.*How to play 5 steps.*The program 27 lines/);
-  expect(all[4]).toEqual(expect.arrayContaining(['ZX81 TRAINER', 'state', 'line', 'time', 'LISTING']));
+  expect(all[4]).toEqual(expect.arrayContaining(['ZX81', 'state', 'line', 'time', 'LISTING']));
   expect(all[5]).toEqual(expect.arrayContaining(['1PLAY', '2HOW TO PLAY', '3LISTING', '4SOURCE']));
 });
 
@@ -85,7 +85,8 @@ test('every bar has its own styling', async ({ page }) => {
   await expect(page.locator('nav.nav-2')).toHaveCSS('border-bottom-color', ORANGE);
   await expect(page.locator('nav.nav-2')).toHaveCSS('border-bottom-width', '4px');
   await expect(page.locator('nav.nav-3 a[aria-current="page"]')).toHaveCSS('background-color', ORANGE);
-  await expect(page.locator('nav.nav-4')).toHaveCSS('border-top-color', ORANGE);
+  await expect(page.locator('nav.nav-4')).toHaveCSS('background-color', ORANGE); // Solarized orange is the dominant colour
+  await expect(page.locator('nav.nav-4')).toHaveCSS('border-bottom-color', 'rgb(7, 54, 66)'); // with a dark rule below
   await expect(page.locator('nav.nav-5')).toHaveCSS('background-color', ORANGE);
 });
 
