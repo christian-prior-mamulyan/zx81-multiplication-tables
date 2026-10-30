@@ -10,9 +10,29 @@
     "dev": "just dev",
     "test": "node --test \"test/unit/*.test.js\"",
     "test:browser": "playwright test",
-    "capture": "node tools/capture-screen.js"
+    "capture": "node tools/capture-screen.js",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:html",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:html": "html-validate src/web/index.html",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json",
+    "knip": "knip"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-unicorn": "^79.0.0",
+    "globals": "^17.13.0",
+    "html-validate": "^11.17.0",
+    "knip": "^6.44.0",
+    "prettier": "^3.9.10",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard": "^40.0.0",
+    "typescript": "^7.0.2"
   }
 }

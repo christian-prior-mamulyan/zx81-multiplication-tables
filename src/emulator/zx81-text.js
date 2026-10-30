@@ -3,13 +3,13 @@
 // semigraphics are written [Q<code>] (Q1..Q10, inverse Q128..Q138), inverse letters {X}.
 
 export const D_FILE = 0x400c; // system variable: address of the display file
-export const NEWLINE = 118; // end of a display-file line
+const NEWLINE = 118; // end of a display-file line
 export const SCREEN_ROWS = 24; // 22 upper rows + 2 lower rows
 export const SCREEN_COLUMNS = 32;
 
 const CHARS = ' ??????????"£$:?()><=+-*/;,.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-export function isGraphics(code) {
+function isGraphics(code) {
   return (code >= 1 && code <= 10) || (code >= 128 && code <= 138);
 }
 

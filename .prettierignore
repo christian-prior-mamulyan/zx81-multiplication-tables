@@ -1,0 +1,17 @@
+node_modules/
+public/
+build/
+artifacts/
+test-results/
+playwright-report/
+coverage/
+package-lock.json
+# vendored third-party code and binaries, kept as the upstream authors wrote them
+src/emulator/zx81/
+packages/*/vendor/
+tools/zxtext2p/
+*.rom
+*.hex
+*.png
+# BASIC sources are fixed-width listings with their own layout
+*.bas

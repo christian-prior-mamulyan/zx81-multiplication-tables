@@ -3,7 +3,7 @@
 // Every key is forwarded like a real key press, through the same press/release functions.
 
 // [label, KeyboardEvent.key, accessible name, css class]
-export const KEYS = [
+const KEYS = [
   ['1', '1', '1'],
   ['2', '2', '2'],
   ['3', '3', '3'],

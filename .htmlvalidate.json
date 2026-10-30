@@ -1,0 +1,51 @@
+{
+  "extends": [
+    "html-validate:recommended"
+  ],
+  "elements": [
+    "html5",
+    {
+      "wa-icon": {
+        "flow": true,
+        "phrasing": true,
+        "attributes": {
+          "name": {},
+          "family": {},
+          "variant": {},
+          "label": {}
+        }
+      },
+      "zx81-trainer": {
+        "flow": true,
+        "attributes": {
+          "program": {},
+          "base": {},
+          "speed": {},
+          "keypad": {
+            "boolean": true
+          },
+          "debug": {
+            "boolean": true
+          },
+          "keys": {
+            "enum": [
+              "document",
+              "focus"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "rules": {
+    "no-inline-style": "error",
+    "require-sri": "off",
+    "no-trailing-whitespace": "off",
+    "doctype-style": [
+      "error",
+      {
+        "style": "lowercase"
+      }
+    ]
+  }
+}

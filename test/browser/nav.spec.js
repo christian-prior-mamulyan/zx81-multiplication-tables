@@ -27,7 +27,7 @@ const measure = (page, selector) =>
     const fg = luminance(parse(style.color));
     const bg = luminance(background);
     const [hi, lo] = fg > bg ? [fg, bg] : [bg, fg];
-    return { ratio: (hi + 0.05) / (lo + 0.05), px: parseFloat(style.fontSize), weight: Number(style.fontWeight) };
+    return { ratio: (hi + 0.05) / (lo + 0.05), px: Number.parseFloat(style.fontSize), weight: Number(style.fontWeight) };
   }, selector);
 
 const status = (page, name) => page.locator(`nav.nav-status [data-status="${name}"]`);

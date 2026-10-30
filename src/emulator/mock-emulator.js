@@ -3,7 +3,7 @@
 // Scenarios: normal, slow, load-error, runtime-error, blank-screen, finished.
 // Select in the browser with ?emulator=mock&scenario=<name>.
 
-import { Emitter } from './emulator-adapter.js';
+import { Emitter } from './emitter.js';
 
 export const SCENARIOS = ['normal', 'slow', 'load-error', 'runtime-error', 'blank-screen', 'finished'];
 

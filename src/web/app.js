@@ -11,7 +11,7 @@ let currentLine = null;
 // Mark the listing line the emulated ZX81 is executing right now.
 function highlight(line) {
   currentLine = line;
-  for (const element of document.querySelectorAll('#zx81-listing .line')) {
+  for (const element of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('#zx81-listing .line'))) {
     element.classList.toggle('current', line !== null && Number(element.dataset.line) === line);
   }
 }

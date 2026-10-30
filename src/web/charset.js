@@ -28,7 +28,7 @@ function drawGlyph(canvas, rom, code) {
 async function main() {
   const response = await fetch('../emulator/roms/zx81.rom');
   const rom = new Uint8Array(await response.arrayBuffer());
-  const body = document.querySelector('#charset tbody');
+  const body = /** @type {HTMLTableSectionElement} */ (document.querySelector('#charset tbody'));
   for (const [escape, code] of ESCAPES) {
     const row = body.insertRow();
     row.insertCell().textContent = `${code} (0x${code.toString(16).toUpperCase().padStart(2, '0')})`;

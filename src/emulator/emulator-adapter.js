@@ -18,28 +18,11 @@
 //   getScreenText() / getScreenRows() (diagnostic text form, see zx81-text.js),
 //   getScreenCodes() (the logical screen as raw codes, for a renderer of our own).
 
+import { EVENTS, Emitter, FRAMES_PER_SECOND } from './emitter.js';
 import { D_FILE, displayFileCodes, displayFileRows } from './zx81-text.js';
 
-export const EVENTS = ['ready', 'program-loaded', 'frame', 'line', 'stopped', 'error'];
-export const PPC = 0x4007; // ZX81 system variable: line number of the statement being executed
-export const FRAMES_PER_SECOND = 50;
-
-export class Emitter {
-  constructor() {
-    this._handlers = new Map();
-  }
-
-  on(event, handler) {
-    if (!EVENTS.includes(event)) throw new Error(`unknown emulator event: ${event}`);
-    if (!this._handlers.has(event)) this._handlers.set(event, new Set());
-    this._handlers.get(event).add(handler);
-    return () => this._handlers.get(event).delete(handler);
-  }
-
-  emit(event, payload) {
-    for (const handler of this._handlers.get(event) ?? []) handler(payload);
-  }
-}
+export { EVENTS, Emitter, FRAMES_PER_SECOND };
+const PPC = 0x4007; // ZX81 system variable: line number of the statement being executed
 
 // KeyboardEvent init for a key press, in the form the emulator's keyboard code reads it.
 export const KEY_CODES = { Enter: 13, Backspace: 8, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Delete: 46 };
@@ -251,6 +234,9 @@ export class RealZX81Emulator extends Emitter {
 }
 
 // kind: "real" | "mock". For the mock, MockClass can be injected (tests) or is imported on demand.
+/**
+ * @param {{ kind?: string, scenario?: string, container?: any, base?: string, speed?: number | null, MockClass?: any }} options
+ */
 export async function createEmulator({ kind = 'real', scenario = 'normal', container, base = './', speed = null, MockClass }) {
   if (kind === 'mock') {
     const Mock = MockClass ?? (await import('./mock-emulator.js')).MockZX81Emulator;

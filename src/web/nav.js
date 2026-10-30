@@ -28,6 +28,7 @@ export function buildNav() {
   const set = (name, text) => {
     nav.querySelector(`[data-status="${name}"]`).textContent = text;
   };
+  /** @param {{ emulatorState?: string, line?: number | null, seconds?: number }} [state] */
   nav.update = ({ emulatorState, line, seconds } = {}) => {
     if (emulatorState !== undefined) set('state', String(emulatorState).toUpperCase());
     if (line !== undefined) set('line', line === null ? '–' : String(line));
