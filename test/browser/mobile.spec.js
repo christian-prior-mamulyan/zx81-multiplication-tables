@@ -8,7 +8,7 @@ test.describe('phone (touch)', () => {
   test.use(PHONE);
 
   test('the page does not scroll sideways and the viewport is set for phones', async ({ page }) => {
-    await page.goto('/?nav=1');
+    await page.goto('/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(await page.evaluate(() => document.querySelector('meta[name="viewport"]').content)).toContain('width=device-width');
     expect(await page.evaluate(() => document.querySelector('meta[name="theme-color"]').content)).toBe('#cb4b16');
@@ -87,9 +87,11 @@ test.describe('phone (touch)', () => {
     expect(await page.locator('#zx81-listing').evaluate((pre) => getComputedStyle(pre).overflowX)).toBe('auto');
   });
 
-  test('the five navigation bars stay one row on a phone and do not widen the page', async ({ page }) => {
-    await page.goto('/design/navbars.html');
+  test('the navigation bar scrolls sideways on a phone and does not widen the page', async ({ page }) => {
+    await page.goto('/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    const nav = await page.locator('nav.nav-status').evaluate((bar) => ({ scrolls: bar.scrollWidth > bar.clientWidth, overflowX: getComputedStyle(bar).overflowX }));
+    expect(nav).toEqual({ scrolls: true, overflowX: 'auto' }); // wider than a 390px phone, so it scrolls inside its own box
   });
 });
 

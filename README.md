@@ -30,6 +30,9 @@ page's JavaScript.
   unreachable kit never keeps the game from starting. **The kits must allow the domain
   `career.cprima.net`** (kit settings at fontawesome.com and webawesome.com), otherwise the page
   simply looks as it does without them.
+- **Navigation bar:** one horizontal status bar in Solarized orange (`src/web/nav.js`,
+  `nav.css`): the ZX81 state, the BASIC line being executed and the emulated time, live from the
+  emulator, plus a LISTING link. On a phone it scrolls sideways instead of wrapping.
 - **Phones:** one fluid column, the screen fills the width at 4:3, notch-safe spacing, touch
   targets of at least 44 px, no double-tap zoom delay, and an on-screen **number pad** (digits,
   delete, Enter) on touch screens, because a canvas shows no soft keyboard. `?keypad=1` shows the
@@ -61,8 +64,6 @@ Python file server), and a C compiler for `zxtext2p` (native `gcc`, or `gcc` ins
 | `/?emulator=mock&scenario=normal` | mock emulator, no Z80; scenarios `normal`, `slow`, `load-error`, `runtime-error`, `blank-screen`, `finished` |
 | `/?speed=0..8` | emulator speed index (4 = real time, 8 = 10x); emulated frame counts do not change |
 | `/?renderer=emulator` | show the emulator's own TV-raster picture instead of the page's drawing of the screen (see below) |
-| `/?nav=1..5`, `/?nav=all`, `/?nav=none` | the game page has navigation bar alternative 4 (the live status bar, Solarized orange) by default; `?nav=N` shows another alternative, `?nav=all` all five (one captioned div each) to compare, `?nav=none` none |
-| `/design/navbars.html` | the five navigation bars side by side: brand and links, breadcrumb, section tabs, live game status, ZX81 keyword menu (each with its own content and styling) |
 | `/debug/charset.html` | every ZX81 semigraphics character, drawn from the ROM bitmaps |
 
 ### How the screen is shown

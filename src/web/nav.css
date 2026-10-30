@@ -1,17 +1,13 @@
-/* Five alternative HORIZONTAL navigation bars in Solarized orange (.nav-1 ... .nav-5).
-   Each has its own content (see nav.js) and its own styling. All stay on ONE row: when the screen
-   is too narrow the bar scrolls sideways instead of wrapping into a column.
-   Solarized: orange #cb4b16, base3 #fdf6e3, base2 #eee8d5, base1 #93a1a1, base01 #586e75, base02 #073642.
-   Every variant sets its own background, so it looks the same whatever the page theme.
-   Text is bold 1.2rem (19.2px, large text, 3:1 is enough) unless a rule below says otherwise;
-   smaller text reaches 4.5:1. Cream on orange is about 4.3:1. */
+/* The navigation bar: a horizontal game status bar, Solarized orange all over, with a dark rule below.
+   It stays on ONE row: when the screen is too narrow it scrolls sideways instead of wrapping.
+   Solarized: orange #cb4b16, base3 #fdf6e3, base02 #073642. Label tags are cream with orange text,
+   values are cream on orange. All text is bold 1.2rem (19.2px, large text), where 3:1 contrast is
+   enough; cream on orange is about 4.3:1. The bar sets its own background, so it looks the same
+   whatever the page theme. */
 
 .site-nav {
   --orange: #cb4b16;
   --cream: #fdf6e3;
-  --sand: #eee8d5;
-  --mist: #93a1a1;
-  --slate: #586e75;
   --night: #073642;
   display: flex;
   flex-wrap: nowrap;
@@ -21,216 +17,67 @@
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none;
-  font: 700 1.2rem/1.2 system-ui, sans-serif;
+  font: 700 1.2rem/1.2 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  letter-spacing: 0.03em;
 }
 
 .site-nav::-webkit-scrollbar {
   display: none;
 }
 
-.site-nav > *,
-.site-nav li {
+.site-nav > * {
   flex: none;
 }
 
-.site-nav ul,
-.site-nav ol,
-.site-nav dl {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.site-nav a {
-  display: block;
-  padding: 0.7rem 1rem;
-  text-decoration: none;
-}
-
-.site-nav a:focus-visible {
-  outline: 3px solid currentColor;
-  outline-offset: -5px;
-}
-
-.site-nav wa-icon {
-  margin-right: 0.45rem;
-}
-
-/* 1 - Brand and links: a solid orange band, the mark left, the links right */
-.nav-1 {
-  background: var(--orange);
-  padding: 0 0.5rem;
-}
-.nav-1 .brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1.35rem;
-  letter-spacing: 0.02em;
-}
-.nav-1 .mark {
-  width: 1.1rem;
-  height: 1.1rem;
-  /* the quarter block of the game: one cell, only its top-left quarter filled */
-  background: linear-gradient(var(--cream), var(--cream)) top left / 50% 50% no-repeat;
-  outline: 2px solid var(--cream);
-}
-.nav-1 ul {
-  margin-left: auto;
-}
-.nav-1 a {
-  color: var(--cream);
-}
-.nav-1 a:hover {
-  background: rgba(253, 246, 227, 0.18);
-}
-.nav-1 a[aria-current='page'] {
-  box-shadow: inset 0 -4px 0 var(--cream);
-}
-
-/* 2 - Where am I: a cream strip with a breadcrumb trail and one thick orange rule below */
-.nav-2 {
-  background: var(--cream);
-  border-bottom: 4px solid var(--orange);
-  padding: 0 0.5rem;
-}
-.nav-2 ol {
-  gap: 0;
-  align-items: center;
-}
-.nav-2 li + li::before {
-  content: '\203A'; /* single right-pointing angle quotation mark */
-  margin: 0 0.6rem;
-  color: var(--orange);
-}
-.nav-2 li {
-  display: flex;
-  align-items: center;
-  color: var(--slate);
-}
-.nav-2 li[aria-current='page'] {
-  color: var(--orange);
-}
-.nav-2 a {
-  padding: 0.7rem 0;
-  color: var(--slate);
-}
-.nav-2 a:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-underline-offset: 0.3em;
-}
-.nav-2 .aside {
-  margin-left: auto;
-  padding: 0.7rem 0.5rem;
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
-}
-
-/* 3 - Sections: tabs on a sand bar, a small count on each, the current tab filled orange */
-.nav-3 {
-  background: var(--sand);
-  padding: 0.4rem 0.5rem;
-  border-radius: 0.5rem;
-}
-.nav-3 a {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--slate);
-  border-radius: 999px;
-}
-.nav-3 a:hover {
-  background: var(--cream);
-}
-.nav-3 a[aria-current='page'] {
-  background: var(--orange);
-  color: var(--cream);
-}
-.nav-3 .badge {
-  padding: 0.1rem 0.55rem;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--slate);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-/* 4 - Game status: a monospace status bar, Solarized orange all over, with a dark rule below and
-   live values. Label and value sit side by side; everything is large bold text, so cream on
-   orange (about 4.3:1) is enough. The labels are set apart as small inverse tags. */
-.nav-4 {
+.nav-status {
   background: var(--orange);
   border-bottom: 4px solid var(--night);
   padding: 0 0.5rem 0 1rem;
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  letter-spacing: 0.03em;
-  gap: 1rem;
 }
-.nav-4 .title {
-  color: var(--cream);
+
+.nav-status .title {
   padding: 0.7rem 0;
+  color: var(--cream);
 }
-.nav-4 dl {
+
+.nav-status dl {
+  display: flex;
+  flex-wrap: nowrap;
   gap: 1rem;
+  margin: 0;
+  padding: 0;
 }
-.nav-4 dl > div {
+
+.nav-status dl > div {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 0;
 }
-.nav-4 dt {
+
+.nav-status dt {
   padding: 0 0.4rem;
   background: var(--cream);
   color: var(--orange);
   text-transform: uppercase;
 }
-.nav-4 dd {
+
+.nav-status dd {
   margin: 0;
   min-width: 4ch;
   color: var(--cream);
 }
-.nav-4 .action {
+
+.nav-status .action {
+  display: block;
   margin-left: auto;
+  padding: 0.7rem 1rem;
   background: var(--night);
   color: var(--cream);
+  text-decoration: none;
 }
 
-/* 5 - ZX81 menu: a numbered keyword menu in inverse video, monospace capitals on orange */
-.nav-5 {
-  background: var(--orange);
-  padding: 0 0.5rem;
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  letter-spacing: 0.08em;
-}
-.nav-5 ul {
-  gap: 0;
-}
-.nav-5 a {
-  display: flex;
-  align-items: center;
-  color: var(--cream);
-}
-.nav-5 .key {
-  margin-right: 0.6rem;
-  padding: 0 0.45rem;
-  background: var(--cream);
-  color: var(--orange);
-}
-.nav-5 a:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
-}
-.nav-5 a[aria-current='page'] {
-  background: var(--cream);
-  color: var(--orange);
-}
-.nav-5 a[aria-current='page'] .key {
-  background: var(--orange);
-  color: var(--cream);
+.nav-status .action:focus-visible {
+  outline: 3px solid var(--cream);
+  outline-offset: -5px;
 }
