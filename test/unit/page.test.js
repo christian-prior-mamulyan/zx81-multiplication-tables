@@ -36,7 +36,7 @@ test('Web Awesome loads from the kit: theme, utilities, native reset, then the l
   // async: a hanging kit server must not hold back the game's own module script
   assert.match(
     html,
-    /<script type="module" async src="https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+\/webawesome\.loader\.js"><\/script>/,
+    /<script type="module" async src="https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+\/webawesome\.loader\.js"\s*><\/script>/,
   );
 });
 

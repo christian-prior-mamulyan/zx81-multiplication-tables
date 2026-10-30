@@ -5,7 +5,9 @@
 
 function el(tag, attributes = {}, ...children) {
   const element = document.createElement(tag);
-  for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
+  for (const [name, value] of Object.entries(attributes)) {
+    element.setAttribute(name, value);
+  }
   element.append(...children);
   return element;
 }
@@ -30,9 +32,15 @@ export function buildNav() {
   };
   /** @param {{ emulatorState?: string, line?: number | null, seconds?: number }} [state] */
   nav.update = ({ emulatorState, line, seconds } = {}) => {
-    if (emulatorState !== undefined) set('state', String(emulatorState).toUpperCase());
-    if (line !== undefined) set('line', line === null ? '–' : String(line));
-    if (seconds !== undefined) set('time', formatTime(seconds));
+    if (emulatorState !== undefined) {
+      set('state', String(emulatorState).toUpperCase());
+    }
+    if (line !== undefined) {
+      set('line', line === null ? '–' : String(line));
+    }
+    if (seconds !== undefined) {
+      set('time', formatTime(seconds));
+    }
   };
   return nav;
 }
@@ -47,6 +55,8 @@ export function bindNav(nav, emulator) {
       push();
     }
   });
-  for (const name of ['program-loaded', 'stopped', 'error', 'line']) emulator.on(name, push);
+  for (const name of ['program-loaded', 'stopped', 'error', 'line']) {
+    emulator.on(name, push);
+  }
   push();
 }

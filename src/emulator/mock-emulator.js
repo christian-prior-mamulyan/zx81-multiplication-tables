@@ -30,7 +30,9 @@ export class MockZX81Emulator extends Emitter {
   // autoRun: advance frames with a timer (browser). Tests set autoRun:false and call tick(n).
   constructor({ container = null, scenario = 'normal', autoRun = Boolean(container) } = {}) {
     super();
-    if (!SCENARIOS.includes(scenario)) throw new Error(`unknown mock scenario: ${scenario}`);
+    if (!SCENARIOS.includes(scenario)) {
+      throw new Error(`unknown mock scenario: ${scenario}`);
+    }
     this.scenario = scenario;
     this.container = container;
     this.autoRun = autoRun;
@@ -61,7 +63,9 @@ export class MockZX81Emulator extends Emitter {
     this._render();
     this.state = 'running';
     this.emit('program-loaded', { id });
-    if (this.autoRun) this._startTimer();
+    if (this.autoRun) {
+      this._startTimer();
+    }
   }
 
   reset() {
@@ -70,8 +74,12 @@ export class MockZX81Emulator extends Emitter {
   }
 
   start() {
-    if (this.state === 'stopped') this.state = 'running';
-    if (this.autoRun) this._startTimer();
+    if (this.state === 'stopped') {
+      this.state = 'running';
+    }
+    if (this.autoRun) {
+      this._startTimer();
+    }
   }
 
   stop() {
@@ -139,10 +147,15 @@ export class MockZX81Emulator extends Emitter {
   }
 
   _render() {
-    if (this.scenario === 'blank-screen') this.rows = [];
-    else if (this.scenario === 'finished' && this.frame >= FINISH_FRAME) this.rows = ['FINISHED'];
-    else if (this.frame < 3) this.rows = ['ENTER YOUR INDIVIDUAL PAUSE'];
-    else this.rows = EXERCISE.slice(0, Math.min(EXERCISE.length, this.frame - 1));
+    if (this.scenario === 'blank-screen') {
+      this.rows = [];
+    } else if (this.scenario === 'finished' && this.frame >= FINISH_FRAME) {
+      this.rows = ['FINISHED'];
+    } else if (this.frame < 3) {
+      this.rows = ['ENTER YOUR INDIVIDUAL PAUSE'];
+    } else {
+      this.rows = EXERCISE.slice(0, Math.min(EXERCISE.length, this.frame - 1));
+    }
     if (this.container) {
       let pre = this.container.querySelector('pre');
       if (!pre) {
@@ -157,7 +170,11 @@ export class MockZX81Emulator extends Emitter {
   // the mock "executes" a fixed script of BASIC lines so listeners can be tested without a Z80
   _emitLine() {
     let line = LINE_SCRIPT[0][1];
-    for (const [fromFrame, scriptLine] of LINE_SCRIPT) if (this.frame >= fromFrame) line = scriptLine;
+    for (const [fromFrame, scriptLine] of LINE_SCRIPT) {
+      if (this.frame >= fromFrame) {
+        line = scriptLine;
+      }
+    }
     if (line !== this.line) {
       this.line = line;
       this.emit('line', { line, frame: this.frame });
@@ -165,13 +182,17 @@ export class MockZX81Emulator extends Emitter {
   }
 
   _startTimer() {
-    if (this.timer !== null) return;
+    if (this.timer !== null) {
+      return;
+    }
     const ms = this.scenario === 'slow' ? SLOW_FRAME_MS : FRAME_MS;
     this.timer = setInterval(() => this.tick(1), ms);
   }
 
   _stopTimer() {
-    if (this.timer !== null) clearInterval(this.timer);
+    if (this.timer !== null) {
+      clearInterval(this.timer);
+    }
     this.timer = null;
   }
 }

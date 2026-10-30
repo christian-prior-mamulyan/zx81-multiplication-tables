@@ -30,7 +30,9 @@ export function expectedLayout(a, b) {
   const rows = [];
   for (let i = 1; i <= a; i++) {
     rows.push(row);
-    if (i === 5 && a > 5) rows.push('');
+    if (i === 5 && a > 5) {
+      rows.push('');
+    }
   }
   return rows;
 }
@@ -58,7 +60,9 @@ export function parseExercise(rows) {
       break;
     }
   }
-  if (blockRows === 0) return null;
+  if (blockRows === 0) {
+    return null;
+  }
   const b = (drawn[0].match(/\[Q1\]/g) ?? []).length;
   const blankAbove = rows[i] === '';
   const answer = blankAbove && /^\d+$/.test(rows[i + 1] ?? '') ? Number(rows[i + 1]) : null;
@@ -112,7 +116,9 @@ export async function startTrainer(page, { program = 'trainer-seeded', pause = 1
 // what the screen shows, instead of every later wait timing out.
 export async function enterPause(page, pause) {
   const digits = String(pause);
-  for (const digit of digits) await typeKey(page, digit);
+  for (const digit of digits) {
+    await typeKey(page, digit);
+  }
   await typeKey(page, 'Enter');
   for (let retry = 0; retry <= 2; retry++) {
     const started = await page
@@ -121,7 +127,9 @@ export async function enterPause(page, pause) {
         () => true,
         () => false,
       );
-    if (started) return;
+    if (started) {
+      return;
+    }
     const rows = await page.evaluate(() => window.zx81.getScreenRows());
     if (retry === 2) {
       const info = await page.evaluate(() => ({
@@ -134,7 +142,9 @@ export async function enterPause(page, pause) {
     if (rows.includes(`${digits}{L}`)) {
       await typeKey(page, 'Enter'); // the digits are on screen, only Enter went missing
     } else {
-      for (const digit of digits) await typeKey(page, digit); // the digits themselves went missing
+      for (const digit of digits) {
+        await typeKey(page, digit);
+      } // the digits themselves went missing
       await typeKey(page, 'Enter');
     }
   }
@@ -153,7 +163,9 @@ export function collectExercises(page, count) {
         let firstSeen = new Map(); // drawing -> first frame it was on screen, within the current exercise
         let printed = false; // true if the multiplication was ever printed as numbers ("7 X 9")
         const close = () => {
-          if (cur) done.push(cur);
+          if (cur) {
+            done.push(cur);
+          }
           cur = null;
         };
         const startFrame = window.zx81.frame;
@@ -171,7 +183,9 @@ export function collectExercises(page, count) {
             return;
           }
           const shown = parse(rows);
-          if (rows.some((r) => /\d+\s*[Xx*]\s*\d+/.test(r))) printed = true;
+          if (rows.some((r) => /\d+\s*[Xx*]\s*\d+/.test(r))) {
+            printed = true;
+          }
 
           // an exercise ends when its answer disappears (the next one clears the screen); the
           // answer is printed digit by digit, so a changing answer is the same exercise
@@ -184,7 +198,9 @@ export function collectExercises(page, count) {
           }
           if (shown) {
             const drawing = JSON.stringify(shown.rows);
-            if (!firstSeen.has(drawing)) firstSeen.set(drawing, frame);
+            if (!firstSeen.has(drawing)) {
+              firstSeen.set(drawing, frame);
+            }
             if (!cur) {
               cur = { a: 0, b: 0, rows: [], blankAboveAnswer: false, answer: null, answerAt: null, drawnAt: null };
             }
@@ -207,7 +223,9 @@ export function collectExercises(page, count) {
           // after the tenth exercise the screen is cleared and the program waits in line 220 (it never ends, so no report is shown)
           const finished = window.zx81.line === 220;
           if (done.length >= wanted || finished) {
-            if (finished) close();
+            if (finished) {
+              close();
+            }
             off();
             resolve({ exercises: done.slice(0, wanted), finished, printed });
           }

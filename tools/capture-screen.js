@@ -50,7 +50,9 @@ export async function captureWith(page, baseUrl, outDir) {
           armed = true;
         });
         const off = window.zx81.on('frame', ({ frame }) => {
-          if (!armed) return;
+          if (!armed) {
+            return;
+          }
           if (first === null) {
             first = frame;
             if (frame >= latestFirstFrame) {
@@ -64,12 +66,17 @@ export async function captureWith(page, baseUrl, outDir) {
           const rows = window.zx81.getScreenRows();
           while (next < script.length && frame >= script[next][2]) {
             const [direction, key] = script[next++];
-            if (direction === 'down') window.zx81.keyDown(key);
-            else window.zx81.keyUp(key);
+            if (direction === 'down') {
+              window.zx81.keyDown(key);
+            } else {
+              window.zx81.keyUp(key);
+            }
           }
           // the multiplication is not printed as numbers; the shared parser reads the drawing
           const shown = parse(rows);
-          if (seen === null && shown && shown.answer !== null) seen = frame;
+          if (seen === null && shown && shown.answer !== null) {
+            seen = frame;
+          }
           if (seen !== null && frame >= seen + after) {
             off();
             window.zx81.stop();
@@ -127,9 +134,11 @@ async function main() {
   } finally {
     await browser.close();
     // `uv run` starts Python as a child; on Windows kill() would leave that child serving the port
-    if (process.platform === 'win32')
+    if (process.platform === 'win32') {
       spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' });
-    else server.kill();
+    } else {
+      server.kill();
+    }
   }
 }
 

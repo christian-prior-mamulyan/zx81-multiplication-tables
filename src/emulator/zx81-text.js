@@ -14,10 +14,18 @@ function isGraphics(code) {
 }
 
 export function zx81CodeToText(code) {
-  if (code === 0) return ' ';
-  if (isGraphics(code)) return `[Q${code}]`;
-  if (code < 64) return CHARS[code];
-  if (code >= 128 && code < 192) return `{${CHARS[code - 128]}}`;
+  if (code === 0) {
+    return ' ';
+  }
+  if (isGraphics(code)) {
+    return `[Q${code}]`;
+  }
+  if (code < 64) {
+    return CHARS[code];
+  }
+  if (code >= 128 && code < 192) {
+    return `{${CHARS[code - 128]}}`;
+  }
   return `<${code}>`;
 }
 
@@ -47,14 +55,18 @@ export function displayFileCodes(read, dfile) {
   for (let guard = 0; guard < 4000 && rows.length < SCREEN_ROWS && addr < 0x10000; guard++) {
     const code = read(addr++);
     if (code === NEWLINE) {
-      while (row.length < SCREEN_COLUMNS) row.push(0);
+      while (row.length < SCREEN_COLUMNS) {
+        row.push(0);
+      }
       rows.push(row.slice(0, SCREEN_COLUMNS));
       row = [];
     } else {
       row.push(code);
     }
   }
-  while (rows.length < SCREEN_ROWS) rows.push(Array(SCREEN_COLUMNS).fill(0));
+  while (rows.length < SCREEN_ROWS) {
+    rows.push(Array(SCREEN_COLUMNS).fill(0));
+  }
   return rows;
 }
 

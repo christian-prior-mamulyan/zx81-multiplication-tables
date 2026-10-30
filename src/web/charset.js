@@ -40,7 +40,9 @@ function drawGlyph(canvas, rom, code) {
   for (let y = 0; y < 8; y++) {
     const bits = inverse ? ~rom[base + y] & 0xff : rom[base + y];
     for (let x = 0; x < 8; x++) {
-      if (bits & (0x80 >> x)) ctx.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+      if (bits & (0x80 >> x)) {
+        ctx.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+      }
     }
   }
 }

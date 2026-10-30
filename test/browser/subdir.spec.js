@@ -8,10 +8,14 @@ test('the site works under a subdirectory (no root-relative requests)', async ({
   const failed = [];
   page.on('request', (request) => {
     const { pathname } = new URL(request.url());
-    if (request.url().startsWith(baseURL) && !pathname.startsWith('/zx81-trainer/')) outside.push(pathname); // same-origin requests only
+    if (request.url().startsWith(baseURL) && !pathname.startsWith('/zx81-trainer/')) {
+      outside.push(pathname);
+    } // same-origin requests only
   });
   page.on('response', (response) => {
-    if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`);
+    if (response.status() >= 400) {
+      failed.push(`${response.status()} ${response.url()}`);
+    }
   });
 
   await page.goto('/zx81-trainer/?debug=1&program=hello&speed=8');
@@ -25,7 +29,9 @@ test('the site works under a subdirectory (no root-relative requests)', async ({
 test('the semigraphics reference page works under a subdirectory', async ({ page }) => {
   const failed = [];
   page.on('response', (response) => {
-    if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`);
+    if (response.status() >= 400) {
+      failed.push(`${response.status()} ${response.url()}`);
+    }
   });
   await page.goto('/zx81-trainer/debug/charset.html');
   await expect(page.locator('#charset tbody tr')).toHaveCount(22);

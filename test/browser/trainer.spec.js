@@ -63,7 +63,9 @@ test('a blank line is printed above every result', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
   const { exercises } = await collectExercises(page, 10);
   expect(exercises).toHaveLength(10);
-  for (const e of exercises) expect(e.blankAboveAnswer, `${e.a} X ${e.b}`).toBe(true);
+  for (const e of exercises) {
+    expect(e.blankAboveAnswer, `${e.a} X ${e.b}`).toBe(true);
+  }
 });
 
 test('a gap after every fifth block across and a blank row after the fifth row down', async ({ page }) => {
@@ -75,7 +77,9 @@ test('a gap after every fifth block across and a blank row after the fifth row d
   expect(wide.length).toBeGreaterThan(0);
   expect(tall.length).toBeGreaterThan(0);
   for (const e of wide) {
-    for (const row of e.rows.filter(Boolean)) expect(row).toMatch(/^(\[Q1\]){5} (\[Q1\])+$/);
+    for (const row of e.rows.filter(Boolean)) {
+      expect(row).toMatch(/^(\[Q1\]){5} (\[Q1\])+$/);
+    }
   }
   for (const e of tall) {
     expect(e.rows[5], `after row 5 of ${e.a} X ${e.b}`).toBe('');

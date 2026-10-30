@@ -36,7 +36,7 @@ export default [
       'no-unused-vars': ['error', { args: 'after-used', argsIgnorePattern: '^_', caughtErrors: 'none' }],
       'no-console': 'error',
       'no-shadow': 'error',
-      curly: ['error', 'multi-line'],
+      curly: ['error', 'all'],
       'import-x/no-cycle': 'error',
       'import-x/no-duplicates': 'error',
       'import-x/no-unresolved': 'error',

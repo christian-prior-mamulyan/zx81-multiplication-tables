@@ -13,7 +13,9 @@ function clock() {
       const end = time + ms;
       for (;;) {
         timers.sort((a, b) => a.at - b.at);
-        if (!timers.length || timers[0].at > end) break;
+        if (!timers.length || timers[0].at > end) {
+          break;
+        }
         const next = timers.shift();
         time = next.at;
         next.fn();

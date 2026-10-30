@@ -65,7 +65,9 @@ test.describe('phone (touch)', () => {
   test('the delete key and several digits work (a two-digit pause)', async ({ page }) => {
     await page.goto('/?debug=1&program=trainer-seeded&speed=8');
     await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
-    for (const key of ['3', '4']) await page.tap(`#zx81-keypad [data-key="${key}"]`);
+    for (const key of ['3', '4']) {
+      await page.tap(`#zx81-keypad [data-key="${key}"]`);
+    }
     await page.waitForFunction(() => window.zx81.getScreenRows().includes('34{L}'));
     await page.tap('#zx81-keypad [data-key="Backspace"]');
     await page.waitForFunction(() => window.zx81.getScreenRows().includes('3{L}'));

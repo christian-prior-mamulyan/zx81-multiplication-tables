@@ -11,13 +11,19 @@ export class Emitter {
 
   // returns a function that removes the handler again
   on(event, handler) {
-    if (!EVENTS.includes(event)) throw new Error(`unknown emulator event: ${event}`);
-    if (!this._handlers.has(event)) this._handlers.set(event, new Set());
+    if (!EVENTS.includes(event)) {
+      throw new Error(`unknown emulator event: ${event}`);
+    }
+    if (!this._handlers.has(event)) {
+      this._handlers.set(event, new Set());
+    }
     this._handlers.get(event).add(handler);
     return () => this._handlers.get(event).delete(handler);
   }
 
   emit(event, payload) {
-    for (const handler of this._handlers.get(event) ?? []) handler(payload);
+    for (const handler of this._handlers.get(event) ?? []) {
+      handler(payload);
+    }
   }
 }

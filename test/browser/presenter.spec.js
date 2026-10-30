@@ -79,7 +79,9 @@ test('drawing stays immediate: each block appears as soon as it is printed', asy
   // before the first block are the pause prompt and the typed digits, which vary with machine speed)
   const first = counts.findIndex((n) => n > 0);
   const drawing = counts.slice(first, first + 40);
-  for (let i = 1; i < drawing.length; i++) expect(drawing[i]).toBeGreaterThanOrEqual(drawing[i - 1]);
+  for (let i = 1; i < drawing.length; i++) {
+    expect(drawing[i]).toBeGreaterThanOrEqual(drawing[i - 1]);
+  }
   expect(Math.max(...drawing)).toBeGreaterThan(2);
 });
 

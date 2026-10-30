@@ -8,7 +8,6 @@ export default {
     'selector-max-id': [0, { severity: 'warning' }],
     'declaration-no-important': [true, { severity: 'warning' }],
     'selector-max-specificity': ['0,3,1', { severity: 'warning' }],
-    'property-no-vendor-prefix': [true, { ignoreProperties: ['user-select'] }], // Safari still needs -webkit-user-select
     'selector-class-pattern': null, // classes are checked for the zx- prefix in phase 3
     'custom-property-pattern': null,
     'no-descending-specificity': null,

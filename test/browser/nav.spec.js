@@ -16,7 +16,9 @@ const measure = (page, selector) =>
       return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
     };
     const element = document.querySelector(sel);
-    if (!element) throw new Error(`no element for ${sel}`);
+    if (!element) {
+      throw new Error(`no element for ${sel}`);
+    }
     let backdrop = element;
     let background = parse(getComputedStyle(backdrop).backgroundColor);
     while (background.length === 4 && background[3] === 0 && backdrop.parentElement) {
@@ -132,7 +134,9 @@ test('the LISTING link leads to the program listing', async ({ page }) => {
 test('the bar works under a subdirectory too', async ({ page }) => {
   const failed = [];
   page.on('response', (response) => {
-    if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`);
+    if (response.status() >= 400) {
+      failed.push(`${response.status()} ${response.url()}`);
+    }
   });
   await page.goto('/zx81-trainer/?debug=1&speed=8');
   await expect(page.locator('nav.nav-status')).toBeVisible();

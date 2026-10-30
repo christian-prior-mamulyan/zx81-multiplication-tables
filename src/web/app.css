@@ -191,7 +191,9 @@ code {
   gap: 0.6rem;
   width: min(100%, 22rem);
   margin: 1rem auto 0;
-  user-select: none;
+
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari still needs the prefix */
+  -webkit-user-select: none;
   user-select: none;
 }
 

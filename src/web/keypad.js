@@ -27,7 +27,9 @@ export function mountKeypad(container, { press, release, show = false }) {
     button.textContent = label;
     button.dataset.key = key;
     button.setAttribute('aria-label', name);
-    if (extra) button.classList.add(extra);
+    if (extra) {
+      button.classList.add(extra);
+    }
     const down = (event) => {
       event.preventDefault(); // no focus change, no text selection, no double-tap zoom
       try {
@@ -39,7 +41,9 @@ export function mountKeypad(container, { press, release, show = false }) {
       press(key);
     };
     const up = (event) => {
-      if (!button.classList.contains('pressed')) return;
+      if (!button.classList.contains('pressed')) {
+        return;
+      }
       event.preventDefault();
       button.classList.remove('pressed');
       release(key);
@@ -51,11 +55,15 @@ export function mountKeypad(container, { press, release, show = false }) {
     button.addEventListener('keydown', (event) => {
       if (event.key === ' ' || event.key === 'Enter') {
         event.preventDefault();
-        if (!event.repeat) press(key);
+        if (!event.repeat) {
+          press(key);
+        }
       }
     });
     button.addEventListener('keyup', (event) => {
-      if (event.key === ' ' || event.key === 'Enter') release(key);
+      if (event.key === ' ' || event.key === 'Enter') {
+        release(key);
+      }
     });
     container.append(button);
   }

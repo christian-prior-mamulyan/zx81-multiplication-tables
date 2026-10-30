@@ -10,7 +10,9 @@ const ORANGE = 'rgb(203, 75, 22)';
 async function standInKit(page) {
   await page.route(/^https?:\/\/ka-p\.webawesome\.com\//, (route) => {
     const url = route.request().url();
-    if (url.endsWith('.css')) return route.fulfill({ contentType: 'text/css', body: ':root{--stand-in-kit:loaded}' });
+    if (url.endsWith('.css')) {
+      return route.fulfill({ contentType: 'text/css', body: ':root{--stand-in-kit:loaded}' });
+    }
     return route.fulfill({
       contentType: 'text/javascript',
       body: "customElements.define('wa-icon', class extends HTMLElement { connectedCallback() { this.dataset.kit = 'loaded'; } });",

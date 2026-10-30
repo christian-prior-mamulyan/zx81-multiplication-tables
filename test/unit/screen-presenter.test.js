@@ -14,7 +14,9 @@ const blank = () => Array.from({ length: SCREEN_ROWS }, () => Array(SCREEN_COLUM
 // a screen with the given cells set: [[row, column, code], ...]
 const screen = (...cells) => {
   const s = blank();
-  for (const [r, c, code] of cells) s[r][c] = code;
+  for (const [r, c, code] of cells) {
+    s[r][c] = code;
+  }
   return s;
 };
 const picture = () => screen([0, 0, 1], [0, 1, 1], [0, 2, 1], [1, 0, 1], [1, 1, 1], [1, 2, 1], [3, 0, 29]);
@@ -54,7 +56,9 @@ test('a partly cleared screen that stays unchanged is shown after HOLD_FRAMES fr
   const state = createPresenterState();
   planFrame(state, picture());
   const partial = screen([0, 0, 1], [3, 0, 29]);
-  for (let i = 1; i < HOLD_FRAMES; i++) assert.equal(planFrame(state, partial), null);
+  for (let i = 1; i < HOLD_FRAMES; i++) {
+    assert.equal(planFrame(state, partial), null);
+  }
   assert.ok(sameScreen(planFrame(state, partial), partial));
 });
 

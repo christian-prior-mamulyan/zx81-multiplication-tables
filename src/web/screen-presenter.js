@@ -31,8 +31,12 @@ export function isRemoval(prev, next) {
   for (let r = 0; r < SCREEN_ROWS; r++) {
     for (let c = 0; c < SCREEN_COLUMNS; c++) {
       const now = next[r][c];
-      if (now !== 0 && now !== prev[r][c]) return false;
-      if (now === 0 && prev[r][c] !== 0) removed = true;
+      if (now !== 0 && now !== prev[r][c]) {
+        return false;
+      }
+      if (now === 0 && prev[r][c] !== 0) {
+        removed = true;
+      }
     }
   }
   return removed;
@@ -60,10 +64,15 @@ export function planFrame(state, frame) {
     state.heldFrames = 0;
     return null;
   }
-  if (!isRemoval(state.shown, frame)) return show();
-  if (isBlank(frame)) return show();
-  if (state.held && sameScreen(state.held, frame)) state.heldFrames += 1;
-  else {
+  if (!isRemoval(state.shown, frame)) {
+    return show();
+  }
+  if (isBlank(frame)) {
+    return show();
+  }
+  if (state.held && sameScreen(state.held, frame)) {
+    state.heldFrames += 1;
+  } else {
     state.held = frame;
     state.heldFrames = 1;
   }
@@ -86,7 +95,9 @@ export class ScreenPresenter {
   // Feed the logical screen of the current emulated frame. Returns true if the picture changed.
   update(screen) {
     const next = planFrame(this.state, screen);
-    if (!next) return false;
+    if (!next) {
+      return false;
+    }
     this._draw(next);
     this.log?.push(next.map((row) => row.map(zx81CodeToText).join('').trimEnd()));
     return true;
@@ -101,14 +112,19 @@ export class ScreenPresenter {
     for (let r = 0; r < SCREEN_ROWS; r++) {
       for (let c = 0; c < SCREEN_COLUMNS; c++) {
         const code = screen[r][c];
-        if (code === 0) continue;
+        if (code === 0) {
+          continue;
+        }
         const base = CHARSET_ROM_ADDRESS + (code & 63) * 8;
         for (let y = 0; y < 8; y++) {
           const bits = code & 128 ? ~this.rom[base + y] & 0xff : this.rom[base + y];
-          if (bits === 0) continue;
+          if (bits === 0) {
+            continue;
+          }
           for (let x = 0; x < 8; x++) {
-            if (bits & (0x80 >> x))
+            if (bits & (0x80 >> x)) {
               ctx.fillRect(this.origin.x + (c * 8 + x) * s, this.origin.y + (r * 8 + y) * s, s, s);
+            }
           }
         }
       }

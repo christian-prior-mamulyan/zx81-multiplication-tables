@@ -81,6 +81,8 @@ export function mountDebugPanel(root, emulator) {
       refresh();
     }
   });
-  for (const name of ['program-loaded', 'stopped', 'error', 'line']) emulator.on(name, refresh);
+  for (const name of ['program-loaded', 'stopped', 'error', 'line']) {
+    emulator.on(name, refresh);
+  }
   refresh();
 }

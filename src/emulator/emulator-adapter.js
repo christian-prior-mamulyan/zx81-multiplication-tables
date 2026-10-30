@@ -78,7 +78,9 @@ export class RealZX81Emulator extends Emitter {
     } catch (cause) {
       return this._fail(new Error(`cannot fetch tape ${id}: ${cause.message}`));
     }
-    if (!response.ok) return this._fail(new Error(`tape ${id} not found (HTTP ${response.status})`));
+    if (!response.ok) {
+      return this._fail(new Error(`tape ${id} not found (HTTP ${response.status})`));
+    }
 
     this.iframe?.remove();
     const iframe = this.container.ownerDocument.createElement('iframe');
@@ -101,7 +103,9 @@ export class RealZX81Emulator extends Emitter {
     win.document.head.append(style);
 
     for (let waited = 0; !win.zx81Machine; waited += 20) {
-      if (waited > 5000) return this._fail(new Error('emulator did not start'));
+      if (waited > 5000) {
+        return this._fail(new Error('emulator did not start'));
+      }
       await new Promise((resolve) => setTimeout(resolve, 20));
     }
     win.zx81Machine.onframe = (frame) => {
@@ -143,7 +147,9 @@ export class RealZX81Emulator extends Emitter {
   step() {
     const machine = this._machine();
     const display = this._display();
-    if (!machine || !display) return;
+    if (!machine || !display) {
+      return;
+    }
     const previous = machine.onframe;
     machine.onframe = (frame) => {
       machine.onframe = previous;
@@ -184,14 +190,18 @@ export class RealZX81Emulator extends Emitter {
 
   getScreenRows() {
     const machine = this._machine();
-    if (!machine) return []; // nothing runs yet
+    if (!machine) {
+      return [];
+    } // nothing runs yet
     return displayFileRows(...this._displayReader(machine));
   }
 
   // The logical screen as raw character codes (24 rows of 32), for a renderer of our own.
   getScreenCodes() {
     const machine = this._machine();
-    if (!machine) return null;
+    if (!machine) {
+      return null;
+    }
     return displayFileCodes(...this._displayReader(machine));
   }
 
@@ -235,7 +245,9 @@ export class RealZX81Emulator extends Emitter {
 
   _dispatchKey(type, key) {
     const win = this._win();
-    if (!win) return;
+    if (!win) {
+      return;
+    }
     this.lastKey = key;
     win.document.dispatchEvent(new win.KeyboardEvent(type, keyEventInit(key)));
   }

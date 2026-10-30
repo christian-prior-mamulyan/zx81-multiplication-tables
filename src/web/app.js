@@ -21,7 +21,9 @@ function highlight(line) {
 async function showListing(program) {
   try {
     const response = await fetch(sourceUrl(program));
-    if (!response.ok) return;
+    if (!response.ok) {
+      return;
+    }
     const listing = document.getElementById('zx81-listing');
     listing.replaceChildren();
     const lines = programLines(await response.text());
@@ -29,7 +31,9 @@ async function showListing(program) {
       const element = document.createElement('span');
       element.className = 'line';
       const number = lineNumber(text);
-      if (number !== null) element.dataset.line = String(number);
+      if (number !== null) {
+        element.dataset.line = String(number);
+      }
       element.textContent = text;
       listing.append(element);
     }
@@ -45,12 +49,21 @@ async function showListing(program) {
 function forwardKeys(keys) {
   const own = /^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/;
   const relay = (type) => (event) => {
-    if (event.ctrlKey || event.metaKey || event.altKey || own.test(event.target?.tagName ?? '')) return;
-    if (event.key.length !== 1 && !(event.key in KEY_CODES)) return;
+    if (event.ctrlKey || event.metaKey || event.altKey || own.test(event.target?.tagName ?? '')) {
+      return;
+    }
+    if (event.key.length !== 1 && !(event.key in KEY_CODES)) {
+      return;
+    }
     event.preventDefault(); // space and the arrow keys must not scroll the page
-    if (event.repeat) return; // the ZX81 has no key repeat in hardware
-    if (type === 'down') keys.down(event.key);
-    else keys.up(event.key);
+    if (event.repeat) {
+      return;
+    } // the ZX81 has no key repeat in hardware
+    if (type === 'down') {
+      keys.down(event.key);
+    } else {
+      keys.up(event.key);
+    }
   };
   document.addEventListener('keydown', relay('down'));
   document.addEventListener('keyup', relay('up'));
@@ -64,7 +77,9 @@ async function startPresenter(emulator, params) {
   document.getElementById('zx81-stage').classList.add('presented');
   emulator.on('frame', () => {
     const codes = emulator.getScreenCodes();
-    if (codes) presenter.update(codes);
+    if (codes) {
+      presenter.update(codes);
+    }
   });
   return presenter;
 }
@@ -85,7 +100,9 @@ async function main() {
   });
 
   // debug builds only: handles for the browser console and the test suite
-  if (params.debug) window.zx81 = emulator;
+  if (params.debug) {
+    window.zx81 = emulator;
+  }
 
   // the navigation bar shows the emulator's live state
   bindNav(navBar, emulator);

@@ -10,7 +10,9 @@ const roots = ['src/web', 'src/emulator'];
 function files(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) return entry.name === 'zx81' ? [] : files(path);
+    if (entry.isDirectory()) {
+      return entry.name === 'zx81' ? [] : files(path);
+    }
     return /\.(js|html|css)$/.test(entry.name) ? [path] : [];
   });
 }
@@ -26,7 +28,9 @@ test('no root-relative URLs in our own pages and scripts', () => {
       /url\(\s*["']?\/(?!\/)/g, // css url(/x)
     ];
     for (const pattern of patterns) {
-      for (const match of text.matchAll(pattern)) offenders.push(`${file}: ${match[0]}`);
+      for (const match of text.matchAll(pattern)) {
+        offenders.push(`${file}: ${match[0]}`);
+      }
     }
   }
   assert.deepEqual(offenders, []);

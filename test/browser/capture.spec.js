@@ -38,6 +38,8 @@ test('capture is deterministic and shows the known first exercise', async ({ con
     expect(readFileSync(join(dirs[0], 'screen.png')).subarray(0, 4)).toEqual(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
     expect(readFileSync(join(dirs[0], 'display-file.bin')).length).toBeGreaterThan(24);
   } finally {
-    for (const dir of dirs) rmSync(dir, { recursive: true, force: true });
+    for (const dir of dirs) {
+      rmSync(dir, { recursive: true, force: true });
+    }
   }
 });
