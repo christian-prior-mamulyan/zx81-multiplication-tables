@@ -150,7 +150,7 @@ export async function enterPause(page, pause) {
   }
 }
 
-// Record exercises until `count` are complete (or the program has reached its final wait, line 220).
+// Record exercises until `count` are complete (or the program has ended: the ZX81 then prints its report, such as 0/200).
 // Each record: operands read off the drawing, the drawn rows, the frame where drawing last changed
 // (drawnAt), the frame the answer first appeared (answerAt) and the answer.
 export function collectExercises(page, count) {
@@ -220,8 +220,8 @@ export function collectExercises(page, count) {
           } else {
             firstSeen = new Map();
           }
-          // after the tenth exercise the screen is cleared and the program waits in line 220 (it never ends, so no report is shown)
-          const finished = window.zx81.line === 220;
+          // after the tenth exercise the screen is cleared and the program ends: the ZX81 prints its report "0/200"
+          const finished = rows.some((r) => /^0\/\d+$/.test(r));
           if (done.length >= wanted || finished) {
             if (finished) {
               close();

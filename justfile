@@ -31,5 +31,38 @@ test-browser: build
 capture: build
     node tools/capture-screen.js
 
+# --- code quality -------------------------------------------------------------------------
+
+# every npm-based check: ESLint, Stylelint, html-validate, Prettier, TypeScript, knip
+lint:
+    npm run lint
+    npm run format:check
+    npm run typecheck
+    npm run knip
+
+# rewrite all files in the project's code style
+format:
+    npm run format
+
+# check shell scripts (shellcheck, fetched on demand through uv)
+lint-shell:
+    uvx --from shellcheck-py shellcheck tools/*.sh
+
+# check and format-check the Python helper (ruff, fetched on demand through uv)
+lint-py:
+    uvx ruff check tools
+    uvx ruff format --check tools
+
+# check the Markdown files
+lint-md:
+    npx --yes markdownlint-cli2 "README.md"
+
+# check the GitHub workflows (actionlint, fetched on demand through uv)
+lint-actions:
+    uvx --from actionlint-py actionlint
+
+# everything that can run on a developer machine, then the tests
+ci: lint test
+
 clean:
     rm -rf build public artifacts test-results playwright-report

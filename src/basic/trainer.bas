@@ -3,11 +3,11 @@
 # units are visibly separated, with a gap after every 5th unit across (line 110), a blank line
 # after the 5th row when more rows follow (line 135), and a blank line above the printed result
 # (line 165). The player's pause is in seconds: PAUSE n waits n frames and the ZX81 shows 50 per
-# second, so line 150 waits P seconds. After the tenth exercise the screen is cleared and the
-# program waits in lines 220-230 instead of ending: a program that ends makes the ZX81 print its
-# report ("0/190": code 0 = OK, the last line run), which is not wanted on screen. The page's
-# Reload button starts a new game. Plain BASIC only: no FAST/SLOW tricks; hiding the clear-screen
-# wipe is the job of the page's JavaScript.
+# second, so line 150 waits P seconds. After the tenth exercise line 200 clears the screen and the
+# program simply ends. The ZX81 then prints its own end report ("0/200": code 0 = OK, the last
+# line run); the page hides that report, shows its own end message and offers a new game. Plain
+# BASIC only: no FAST/SLOW tricks, no waiting loop at the end; hiding the clear-screen wipe and
+# the report is the job of the page's JavaScript.
 # Line 100 holds the glyph (\'  = code 1, the top-left quarter block) so it is a one-line change.
 # Layout of this file: line numbers right-aligned, loop bodies indented. zxtext2p ignores the
 # spaces, so the program on the ZX81 is the same.
@@ -33,6 +33,3 @@
 180   PAUSE 150
 190 NEXT N
 200 CLS
-210 PRINT "PRESS RELOAD TO PLAY AGAIN"
-220 PAUSE 32767
-230 GOTO 220

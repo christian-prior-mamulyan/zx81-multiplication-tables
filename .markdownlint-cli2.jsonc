@@ -1,0 +1,10 @@
+{
+  // Prettier lays out the Markdown; line length is not checked here.
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+  },
+  "ignores": ["node_modules/**", "src/emulator/zx81/**", "tools/zxtext2p/**"],
+}

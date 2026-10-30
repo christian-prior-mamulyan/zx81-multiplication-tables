@@ -24,6 +24,24 @@ export function sameScreen(a, b) {
   return a.every((row, r) => row.every((code, c) => code === b[r][c]));
 }
 
+const REPORT_ROW = SCREEN_ROWS - 1;
+const SLASH = 24;
+const isDigit = (code) => code >= 28 && code <= 37;
+const isLetter = (code) => code >= 38 && code <= 63;
+
+// When a program ends (or stops) the ZX81 prints a report in the bottom row: a digit or a letter,
+// a slash and a line number, such as "0/200". The page shows its own end message instead.
+export function isReport(screen) {
+  const row = screen[REPORT_ROW];
+  const used = row.findLastIndex((code) => code !== 0) + 1;
+  return used >= 3 && (isDigit(row[0]) || isLetter(row[0])) && row[1] === SLASH && row.slice(2, used).every(isDigit);
+}
+
+// The screen without the ZX81's own end report (the input is not changed).
+export function hideReport(screen) {
+  return isReport(screen) ? screen.map((row, r) => (r === REPORT_ROW ? row.map(() => 0) : row)) : screen;
+}
+
 // True when `next` only lost cells compared with `prev`: every cell it still has equals the same
 // cell of `prev`, and at least one cell is gone. This is what a clear-screen wipe looks like.
 export function isRemoval(prev, next) {
@@ -94,7 +112,7 @@ export class ScreenPresenter {
 
   // Feed the logical screen of the current emulated frame. Returns true if the picture changed.
   update(screen) {
-    const next = planFrame(this.state, screen);
+    const next = planFrame(this.state, hideReport(screen));
     if (!next) {
       return false;
     }

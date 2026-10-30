@@ -16,10 +16,11 @@ import argparse
 import functools
 import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from typing import ClassVar
 
 
 class Handler(SimpleHTTPRequestHandler):
-    extensions_map = {
+    extensions_map: ClassVar[dict[str, str]] = {
         **SimpleHTTPRequestHandler.extensions_map,
         ".js": "text/javascript",
         ".mjs": "text/javascript",
@@ -35,7 +36,7 @@ class Handler(SimpleHTTPRequestHandler):
             if path == marker:
                 path = marker + "/"
             if path.startswith(marker + "/"):
-                path = path[len(marker):]
+                path = path[len(marker) :]
         return super().translate_path(path)
 
     def end_headers(self):
@@ -55,7 +56,9 @@ class Server(ThreadingHTTPServer):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dir", default="public")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--also-under", dest="prefix", default=None)

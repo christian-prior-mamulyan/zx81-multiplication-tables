@@ -3,7 +3,7 @@ import { KeyQueue } from './key-queue.js';
 import { mountKeypad } from './keypad.js';
 import { lineNumber, programLines, sourceUrl } from './listing.js';
 import { bindNav, buildNav } from './nav.js';
-import { ScreenPresenter } from './screen-presenter.js';
+import { ScreenPresenter, isReport } from './screen-presenter.js';
 import { parseParams } from './url-params.js';
 
 let currentLine = null;
@@ -75,10 +75,16 @@ async function startPresenter(emulator, params) {
   const rom = new Uint8Array(await (await fetch('./emulator/roms/zx81.rom')).arrayBuffer());
   const presenter = new ScreenPresenter({ canvas, rom, keepLog: params.debug });
   document.getElementById('zx81-stage').classList.add('presented');
+  // The trainer ends by clearing the screen and stopping; the ZX81 then prints its own report
+  // ("0/200"). The presenter hides that report and the page shows its end message instead.
+  const endNote = params.program.startsWith('trainer') ? document.getElementById('zx81-end') : null;
   emulator.on('frame', () => {
     const codes = emulator.getScreenCodes();
     if (codes) {
       presenter.update(codes);
+      if (endNote) {
+        endNote.hidden = !isReport(codes);
+      }
     }
   });
   return presenter;

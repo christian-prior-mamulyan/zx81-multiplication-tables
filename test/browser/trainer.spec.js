@@ -35,17 +35,30 @@ test('the multiplication is never printed as numbers', async ({ page }) => {
   expect(printed).toBe(false);
 });
 
-test('after the tenth exercise the screen is cleared and tells the player to reload', async ({ page }) => {
+test('after the tenth exercise the program clears the screen and simply ends', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
   const { finished, exercises } = await collectExercises(page, 11); // asking for more than exist runs to the end
   expect(finished).toBe(true);
   expect(exercises).toHaveLength(10);
-  // a program that ends makes the ZX81 print its report ("0/190"); this one never ends
+  // The emulated machine: the screen is cleared (line 200) and the program ended, so the ZX81
+  // printed its own end report "0/200" (code 0 = OK, the last line run). Nothing else is on screen.
   const now = await page.evaluate(() => window.zx81.frame);
-  await page.waitForFunction((frame) => window.zx81.frame >= frame + 150, now);
+  await page.waitForFunction((frame) => window.zx81.frame >= frame + 100, now);
   const rows = await page.evaluate(() => window.zx81.getScreenRows());
-  expect(rows.filter(Boolean)).toEqual(['PRESS RELOAD TO PLAY AGAIN']); // nothing else on screen, no report
-  expect(await page.evaluate(() => window.zx81.line)).toBe(220);
+  expect(rows.filter(Boolean)).toEqual(['0/200']);
+  expect(await page.evaluate(() => window.zx81.line)).toBe(200);
+});
+
+test('the page hides the ZX81 end report and shows its own end message', async ({ page }) => {
+  await startTrainer(page, { pause: 1 });
+  await collectExercises(page, 11);
+  // what the player sees: a completely blank screen (the report is hidden) and the page's message
+  await page.waitForFunction(() => window.zx81Presenter.log.at(-1)?.every((row) => row === ''));
+  await expect(page.locator('#zx81-end')).toBeVisible();
+  await expect(page.locator('#zx81-end')).toContainText('Reload');
+  // starting again removes the message
+  await page.click('#zx81-reload');
+  await expect(page.locator('#zx81-end')).toBeHidden();
 });
 
 test('units are quarter blocks, so every unit is separated from its neighbours', async ({ page }) => {

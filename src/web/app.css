@@ -266,6 +266,15 @@ code {
   font-size: 0.9rem;
 }
 
+/* the page's own end-of-game message under the screen */
+.end {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--base2);
+  border-left: 4px solid var(--orange);
+  color: var(--base02);
+}
+
 /* developer panel (?debug=1) */
 #zx81-debug {
   margin-top: 1rem;
