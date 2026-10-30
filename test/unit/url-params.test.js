@@ -9,7 +9,7 @@ test('defaults launch the trainer with the real emulator', () => {
     emulator: 'real',
     renderer: 'screen',
     keypad: false,
-    nav: 'all',
+    nav: 4,
     scenario: 'normal',
     speed: null,
   });
@@ -48,12 +48,12 @@ test('the page draws the screen itself unless ?renderer=emulator', () => {
   assert.equal(parseParams('?renderer=other').renderer, 'screen');
 });
 
-test('the page holds all five navigation bars by default; ?nav= picks one or none', () => {
-  assert.equal(parseParams('').nav, 'all');
+test('the page has navigation bar alternative 4 by default; ?nav= picks another, all five, or none', () => {
+  assert.equal(parseParams('').nav, 4);
   for (const n of [1, 2, 3, 4, 5]) assert.equal(parseParams(`?nav=${n}`).nav, n);
   assert.equal(parseParams('?nav=none').nav, 'none');
   assert.equal(parseParams('?nav=all').nav, 'all');
-  for (const bad of ['0', '6', 'x', '']) assert.equal(parseParams(`?nav=${bad}`).nav, 'all', bad);
+  for (const bad of ['0', '6', 'x', '']) assert.equal(parseParams(`?nav=${bad}`).nav, 4, bad);
 });
 
 test('unknown emulator values mean the real emulator', () => {

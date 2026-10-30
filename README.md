@@ -61,7 +61,7 @@ Python file server), and a C compiler for `zxtext2p` (native `gcc`, or `gcc` ins
 | `/?emulator=mock&scenario=normal` | mock emulator, no Z80; scenarios `normal`, `slow`, `load-error`, `runtime-error`, `blank-screen`, `finished` |
 | `/?speed=0..8` | emulator speed index (4 = real time, 8 = 10x); emulated frame counts do not change |
 | `/?renderer=emulator` | show the emulator's own TV-raster picture instead of the page's drawing of the screen (see below) |
-| `/?nav=1..5`, `/?nav=none` | the game page holds all five alternative navigation bars (one div each, captioned) by default; `?nav=N` shows only bar N, `?nav=none` none |
+| `/?nav=1..5`, `/?nav=all`, `/?nav=none` | the game page has navigation bar alternative 4 (the live status bar, Solarized orange) by default; `?nav=N` shows another alternative, `?nav=all` all five (one captioned div each) to compare, `?nav=none` none |
 | `/design/navbars.html` | the five navigation bars side by side: brand and links, breadcrumb, section tabs, live game status, ZX81 keyword menu (each with its own content and styling) |
 | `/debug/charset.html` | every ZX81 semigraphics character, drawn from the ROM bitmaps |
 

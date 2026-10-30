@@ -190,8 +190,23 @@ test('bar 3 on the game page counts the real steps and BASIC lines', async ({ pa
   await expect(page.locator('nav.nav-3 [data-badge="lines"]')).toHaveText(`${lines} lines`);
 });
 
-test('the single game page holds the five alternative navigation bars, one div each', async ({ page }) => {
+test('the game page has only alternative 4, the orange status bar, above the heading', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('nav.site-nav')).toHaveCount(1);
+  await expect(page.locator('#zx81-nav > div.nav-alt')).toHaveCount(1);
+  await expect(page.locator('#zx81-nav > div.nav-alt[data-alt="4"] nav.nav-4')).toBeVisible();
+  await expect(page.locator('.nav-caption')).toHaveCount(0); // no caption: it is the page's bar, not one of several
+  await expect(page.locator('nav.nav-4')).toHaveCSS('background-color', ORANGE); // Solarized orange is the dominant colour
+  expect(await page.locator('nav.nav-4').evaluate((nav) => getComputedStyle(nav).display)).toBe('flex'); // horizontal
+  const bar = await page.locator('nav.nav-4').boundingBox();
+  const heading = await page.locator('h1').boundingBox();
+  expect(bar.y + bar.height).toBeLessThanOrEqual(heading.y);
+  // live: it follows the emulator on the real page
+  await expect(page.locator('nav.nav-4 [data-status="state"]')).toHaveText('RUNNING');
+});
+
+test('?nav=all puts all five alternatives on the page, one captioned div each, to compare', async ({ page }) => {
+  await page.goto('/?nav=all');
   const holders = page.locator('#zx81-nav > div.nav-alt');
   await expect(holders).toHaveCount(5);
   for (const n of VARIANTS) {
@@ -212,18 +227,19 @@ test('the single game page holds the five alternative navigation bars, one div e
   await expect(page.locator('#zx81-reload')).toBeVisible();
 });
 
-test('?nav=N shows one bar, ?nav=none none, anything else all five', async ({ page }) => {
+test('?nav=N shows another bar, ?nav=none none, anything else alternative 4', async ({ page }) => {
   await page.goto('/?nav=3');
   await expect(page.locator('nav.site-nav')).toHaveCount(1);
   await expect(page.locator('nav.nav-3')).toHaveCount(1);
   await page.goto('/?nav=none');
   await expect(page.locator('nav.site-nav')).toHaveCount(0);
   await page.goto('/?nav=9');
-  await expect(page.locator('nav.site-nav')).toHaveCount(5);
+  await expect(page.locator('nav.site-nav')).toHaveCount(1);
+  await expect(page.locator('nav.nav-4')).toHaveCount(1);
 });
 
 test('with all five on the page the live bars follow the emulator and each bar keeps its own content', async ({ page }) => {
-  await page.goto('/?debug=1&program=trainer-seeded&speed=8');
+  await page.goto('/?nav=all&debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
   await expect(page.locator('nav.nav-4 [data-status="state"]')).toHaveText('RUNNING');
   await expect(page.locator('nav.nav-4 [data-status="line"]')).toHaveText('20');

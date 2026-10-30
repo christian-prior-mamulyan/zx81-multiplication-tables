@@ -5,6 +5,12 @@ import { NAV_VARIANTS } from './nav.js';
 
 const PROGRAM_ID = /^[a-z0-9-]+$/;
 export const DEFAULT_PROGRAM = 'trainer';
+export const DEFAULT_NAV = 4;
+
+function navChoice(value) {
+  if (value === 'none' || value === 'all') return value;
+  return NAV_VARIANTS.includes(Number(value)) ? Number(value) : DEFAULT_NAV;
+}
 
 export function parseParams(search) {
   const params = new URLSearchParams(search);
@@ -19,9 +25,9 @@ export function parseParams(search) {
     renderer: params.get('renderer') === 'emulator' ? 'emulator' : 'screen',
     // show the on-screen number pad even without a touch screen (it appears on touch screens anyway)
     keypad: params.get('keypad') === '1',
-    // Navigation bars: the page holds all five alternatives ("all", the default) so they can be
-    // compared in place; ?nav=1..5 shows one of them, ?nav=none shows none.
-    nav: params.get('nav') === 'none' ? 'none' : NAV_VARIANTS.includes(Number(params.get('nav'))) ? Number(params.get('nav')) : 'all',
+    // Navigation bar: alternative 4 (the game status bar, Solarized orange) is the one on the page.
+    // ?nav=1..5 shows another alternative, ?nav=all all five to compare, ?nav=none none.
+    nav: navChoice(params.get('nav')),
     scenario: params.get('scenario') || 'normal',
     // emulator-native speed index 0-8 (4 = real time); only used when given
     speed: Number.isInteger(speed) && speed >= 0 && speed <= 8 ? speed : null,
