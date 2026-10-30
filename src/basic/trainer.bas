@@ -17,8 +17,8 @@
  25 RAND
  30 FOR N=1 TO 10
  40   CLS
- 50   LET A=INT (RND*8)+2
- 60   LET B=INT (RND*8)+2
+ 50   LET A=INT (RND*9)+2
+ 60   LET B=INT (RND*9)+2
  80   FOR I=1 TO A
  90     FOR J=1 TO B
 100       PRINT "\' ";

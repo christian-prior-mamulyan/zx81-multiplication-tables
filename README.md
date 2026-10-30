@@ -5,11 +5,13 @@ inside an emulated ZX81**. JavaScript only hosts, instruments and presents it; t
 never reimplemented in JavaScript.
 
 The use: a player says the answer **out loud** before the program shows it. Ten multiplication
-exercises per run. Each is drawn as a rows of b quarter blocks (ZX81 semigraphics code 1, so every
-unit is visibly separated), with a gap after every fifth block across and a blank line after the
-fifth row. The multiplication is not printed as numbers; the player reads it off the drawing. The
-program then waits for the player's pause (1 to 99 seconds), prints a blank line and shows the
-answer. After ten exercises it clears the screen and ends; the page then shows "The game is over" with a New game button. New game is also in the status bar at the top, which shows the phase, the BASIC line and the exercise number.
+exercises per run. Each is drawn as a rows of b quarter blocks, with a and b between 2 and 10 (ZX81
+semigraphics code 1, so every unit is visibly separated), and a gap after every fifth block across
+and a blank line after the fifth row. The multiplication is not printed as numbers; the player
+reads it off the drawing. The program then waits for the player's pause (1 to 99 seconds), prints a
+blank line and shows the answer. After ten exercises it clears the screen and ends; the page then
+shows "The game is over" with a New game button. New game is also in the status bar at the top,
+which shows the phase, the BASIC line and the exercise number.
 
 The page works in desktop and mobile browsers.
 
@@ -33,6 +35,10 @@ page's JavaScript.
 - **Navigation bar:** one horizontal status bar in Solarized orange (`src/web/nav.js`,
   `nav.css`): the phase, the BASIC line being executed and the exercise number, live from the
   emulator, plus the New game button. On a phone it scrolls sideways instead of wrapping.
+- **Layout:** the game comes first, under the status bar and the heading. From 56 rem width the
+  page has two columns: the game on the left, and on the right two collapsible panels, "How to
+  play" (open on the first visit, then remembered) and "The program" (the BASIC listing, closed,
+  with the executing line highlighted). On a phone everything is one column.
 - **Phones:** one fluid column, the screen fills the width at 4:3, notch-safe spacing, touch
   targets of at least 44 px, no double-tap zoom delay, and an on-screen **number pad** (digits,
   delete, Enter) on touch screens, because a canvas shows no soft keyboard. `?keypad=1` shows the
@@ -88,6 +94,9 @@ src/basic/*.bas  --zxtext2p-->  build/*.p  --xxd-->  public/tapes/*.p.hex
 vendored ZX81 emulator (JtyOne, JavaScript) <-- adapter (src/emulator/emulator-adapter.js)
                                                         |
                                            src/web (page, debug panel) --> public/
+
+src/basic/*.phases.json  (BASIC line ranges -> phase names, loop counter variable)
+                         --> src/web/phases.js --> status bar
 ```
 
 - **No TZX step.** The emulator loads a `.P` file directly when the URL ends in `.p` and the server
@@ -109,7 +118,13 @@ vendored ZX81 emulator (JtyOne, JavaScript) <-- adapter (src/emulator/emulator-a
 just test           # unit tests (node), no network, no browser
 just test-browser   # Playwright: emulator integration, trainer behaviour, mock, Pages paths
 just capture        # artifacts/screen.png, debug.txt, display-file.bin for a known exercise
+just lint           # ESLint, Prettier check, Stylelint, html-validate, type check, knip
+just format         # rewrite all files in the project's code style
+just ci             # lint, then the unit tests
 ```
+
+`just lint-shell`, `just lint-py`, `just lint-md` and `just lint-actions` check the shell scripts,
+the Python helper, the Markdown and the workflows (the tools are fetched on demand through uv).
 
 - Emulator integration tests check the ROM boots, programs load and run, the screen changes,
   semigraphics are emitted with exact ZX81 codes and rendered as the original glyphs
@@ -124,7 +139,8 @@ just capture        # artifacts/screen.png, debug.txt, display-file.bin for a kn
 ## Deployment
 
 `.github/workflows/pages.yml` tests, runs `just build` and publishes `public/` with GitHub Pages
-(`.nojekyll` is included). `test.yml` runs the tests and the capture on every push.
+(`.nojekyll` is included). `test.yml` runs the tests and the capture on every push, and `lint.yml`
+runs the linters and checkers (the `just lint*` recipes) on every push.
 
 ## Licences
 

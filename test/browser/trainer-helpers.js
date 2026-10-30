@@ -13,8 +13,8 @@ export function expectedExercises(seed, count) {
     return s / 65536;
   };
   for (let i = 0; i < count; i++) {
-    const a = Math.floor(rnd() * 8) + 2; // LET A=INT (RND*8)+2
-    const b = Math.floor(rnd() * 8) + 2; // LET B=INT (RND*8)+2
+    const a = Math.floor(rnd() * 9) + 2; // LET A=INT (RND*9)+2
+    const b = Math.floor(rnd() * 9) + 2; // LET B=INT (RND*9)+2
     exercises.push({ a, b });
   }
   return exercises;
