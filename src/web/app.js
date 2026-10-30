@@ -3,6 +3,7 @@ import { KeyQueue } from './key-queue.js';
 import { mountKeypad } from './keypad.js';
 import { lineNumber, programLines, sourceUrl } from './listing.js';
 import { bindNav, buildNav } from './nav.js';
+import { loadPhases } from './phases.js';
 import { ScreenPresenter, isReport } from './screen-presenter.js';
 import { parseParams } from './url-params.js';
 
@@ -37,6 +38,7 @@ async function showListing(program) {
       element.textContent = text;
       listing.append(element);
     }
+    document.getElementById('zx81-program-title').textContent = `The program (${lines.length} lines)`;
     document.getElementById('zx81-program').hidden = false;
     highlight(currentLine);
   } catch {
@@ -76,28 +78,56 @@ async function startPresenter(emulator, params) {
   const presenter = new ScreenPresenter({ canvas, rom, keepLog: params.debug });
   document.getElementById('zx81-stage').classList.add('presented');
   // The trainer ends by clearing the screen and stopping; the ZX81 then prints its own report
-  // ("0/200"). The presenter hides that report and the page shows its end message instead.
-  const endNote = params.program.startsWith('trainer') ? document.getElementById('zx81-end') : null;
+  // ("0/200"). The presenter hides that report and the page shows its end overlay instead.
+  const endOverlay = params.program.startsWith('trainer') ? document.getElementById('zx81-end') : null;
   emulator.on('frame', () => {
     const codes = emulator.getScreenCodes();
     if (codes) {
       presenter.update(codes);
-      if (endNote) {
-        endNote.hidden = !isReport(codes);
+      if (endOverlay) {
+        endOverlay.hidden = !isReport(codes);
       }
     }
   });
   return presenter;
 }
 
+// A <details> block that remembers whether the player closed it (first visit: as in the markup).
+function rememberOpen(details, key) {
+  try {
+    if (localStorage.getItem(key) === 'closed') {
+      details.open = false;
+    }
+    details.addEventListener('toggle', () => localStorage.setItem(key, details.open ? 'open' : 'closed'));
+  } catch {
+    // storage can be blocked (private windows); the block then simply keeps its default
+  }
+}
+
 async function main() {
   const params = parseParams(window.location.search);
-  const navBar = buildNav();
+  // only the trainer has a phase table; it loads while the emulator starts
+  const phasesPending = params.program.startsWith('trainer') ? loadPhases(params.program) : Promise.resolve(null);
+  rememberOpen(document.getElementById('howto'), 'zx81.howto');
+
+  // New game: power the emulated ZX81 on again and start over (the button is outside the simulation)
+  let emulator = null;
+  const newGame = async () => {
+    /** @type {HTMLElement | null} */ (document.activeElement)?.blur?.(); // the next Enter key must not press a button
+    highlight(null);
+    try {
+      await emulator.reset();
+    } catch {
+      // already reported through the error event
+    }
+  };
+  const navBar = buildNav({ onNewGame: newGame });
   document.getElementById('zx81-nav').append(navBar);
+  document.getElementById('zx81-newgame-end').addEventListener('click', newGame);
   const container = document.getElementById('zx81-screen');
   const status = document.getElementById('zx81-status');
 
-  const emulator = await createEmulator({
+  emulator = await createEmulator({
     kind: params.emulator,
     scenario: params.scenario,
     container,
@@ -110,8 +140,9 @@ async function main() {
     window.zx81 = emulator;
   }
 
-  // the navigation bar shows the emulator's live state
-  bindNav(navBar, emulator);
+  // the navigation bar shows what the game is doing, from the emulator's own state
+  const phases = await phasesPending;
+  bindNav(navBar, emulator, { phases });
 
   emulator.on('error', (error) => {
     status.textContent = `Error: ${error.message}`;
@@ -143,18 +174,6 @@ async function main() {
     const { mountDebugPanel } = await import('./debug-panel.js');
     mountDebugPanel(document.getElementById('zx81-debug'), emulator);
   }
-
-  // Reload button, outside the simulation: power the emulated ZX81 on again and start over
-  const reload = document.getElementById('zx81-reload');
-  reload.addEventListener('click', async () => {
-    reload.blur(); // otherwise the next Enter key would press the button again
-    highlight(null);
-    try {
-      await emulator.reset();
-    } catch {
-      // already reported through the error event
-    }
-  });
 
   showListing(params.program);
   try {

@@ -23,7 +23,7 @@ cp src/web/*.js src/web/*.css public/web/
 cp src/web/debug/charset.html public/debug/charset.html
 # BASIC sources, shown under the emulator (including the seeded test variant)
 mkdir -p public/basic
-cp src/basic/*.bas build/trainer-seeded.bas public/basic/
+cp src/basic/*.bas src/basic/*.phases.json build/trainer-seeded.bas public/basic/
 cp .nojekyll public/.nojekyll
 
 echo "site ready in public/"

@@ -39,6 +39,7 @@ test('createEmulator selects the mock without changing the interface', async () 
     'keyDown',
     'keyUp',
     'focus',
+    'getBasicNumber',
     'getScreen',
     'captureScreen',
     'getMemory',

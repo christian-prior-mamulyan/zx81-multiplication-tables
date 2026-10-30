@@ -3,7 +3,7 @@
    Solarized: orange #cb4b16, base3 #fdf6e3, base02 #073642. Label tags are cream with orange text,
    values are cream on orange. All text is bold 1.2rem (19.2px, large text), where 3:1 contrast is
    enough; cream on orange is about 4.3:1. The bar sets its own background, so it looks the same
-   whatever the page theme. */
+   whatever the page theme. On a phone NEW GAME comes first, so it is never scrolled out of view. */
 
 .site-nav {
   --orange: #cb4b16;
@@ -14,7 +14,7 @@
   flex-wrap: nowrap;
   align-items: center;
   gap: 1rem;
-  margin: 0 0 1rem;
+  margin: 0;
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none;
@@ -35,9 +35,9 @@
 }
 
 .nav-status {
+  padding: 0 var(--gutter, 1rem);
   background: var(--orange);
   border-bottom: 4px solid var(--night);
-  padding: 0 0.5rem 0 1rem;
 }
 
 .nav-status .title {
@@ -45,18 +45,17 @@
   color: var(--cream);
 }
 
-.nav-status dl {
+.nav-status .cells {
   display: flex;
   flex-wrap: nowrap;
   gap: 1rem;
-  margin: 0;
-  padding: 0;
 }
 
-.nav-status dl > div {
+.nav-status .cell {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin: 0;
   padding: 0.55rem 0;
 }
 
@@ -68,21 +67,41 @@
 }
 
 .nav-status dd {
-  margin: 0;
   min-width: 4ch;
+  margin: 0;
   color: var(--cream);
 }
 
+/* LISTING and NEW GAME: dark buttons at the right end */
 .nav-status .action {
   display: block;
-  margin-left: auto;
   padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0;
   background: var(--night);
   color: var(--cream);
+  font: inherit;
+  letter-spacing: inherit;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-status .listing {
+  margin-left: auto;
+}
+
+.nav-status .action:hover {
+  background: var(--cream);
+  color: var(--night);
 }
 
 .nav-status .action:focus-visible {
   outline: 3px solid var(--cream);
   outline-offset: -5px;
+}
+
+@media (width < 40rem) {
+  .nav-status .new-game {
+    order: -1;
+  }
 }

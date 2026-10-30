@@ -87,16 +87,28 @@ test.describe('phone (touch)', () => {
     await page.waitForFunction(() => window.zx81.getScreenRows().includes('27{L}'));
   });
 
-  test('Reload is a comfortable touch target and sits above the screen', async ({ page }) => {
+  test('New game is a comfortable touch target, comes first in the bar and is on screen', async ({ page }) => {
     await page.goto('/');
-    const reload = await page.locator('#zx81-reload').boundingBox();
+    const newGame = await page.locator('#zx81-newgame').boundingBox();
     const stage = await page.locator('#zx81-stage').boundingBox();
-    expect(reload.height).toBeGreaterThanOrEqual(44);
-    expect(reload.y + reload.height).toBeLessThanOrEqual(stage.y);
+    const title = await page.locator('nav.nav-status .title').boundingBox();
+    expect(newGame.height).toBeGreaterThanOrEqual(44);
+    expect(newGame.y + newGame.height).toBeLessThanOrEqual(stage.y);
+    expect(newGame.x).toBeGreaterThanOrEqual(0); // not scrolled out of view
+    expect(newGame.x + newGame.width).toBeLessThanOrEqual(390);
+    expect(newGame.x).toBeLessThan(title.x); // the bar scrolls sideways, so NEW GAME is placed first
+  });
+
+  test('the game is above the fold on a phone: the screen starts right under the bar and heading', async ({ page }) => {
+    await page.goto('/');
+    const stage = await page.locator('#zx81-stage').boundingBox();
+    expect(stage.y).toBeLessThan(200); // not pushed down by instructions
+    expect(stage.y + stage.height).toBeLessThan(844); // the whole screen fits in a 390x844 phone viewport
   });
 
   test('the program listing scrolls inside its box instead of widening the page', async ({ page }) => {
     await page.goto('/');
+    await page.locator('#zx81-program > summary').click(); // the listing is in a closed <details>
     await page.locator('#zx81-listing').waitFor();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(await page.locator('#zx81-listing').evaluate((pre) => getComputedStyle(pre).overflowX)).toBe('auto');

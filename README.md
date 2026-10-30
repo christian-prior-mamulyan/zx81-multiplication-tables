@@ -9,7 +9,7 @@ exercises per run. Each is drawn as a rows of b quarter blocks (ZX81 semigraphic
 unit is visibly separated), with a gap after every fifth block across and a blank line after the
 fifth row. The multiplication is not printed as numbers; the player reads it off the drawing. The
 program then waits for the player's pause (1 to 99 seconds), prints a blank line and shows the
-answer. After ten exercises it clears the screen and tells the player to press Reload.
+answer. After ten exercises it clears the screen and ends; the page then shows "The game is over" with a New game button. New game is also in the status bar at the top, which shows the phase, the BASIC line and the exercise number.
 
 The page works in desktop and mobile browsers.
 

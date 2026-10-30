@@ -16,10 +16,12 @@
 //   changed, read from the ZX81 system variable PPC once per frame), stopped, error.
 // Extras used by the debug panel and tests: state, program, frame, pc, lastKey, step(),
 //   getScreenText() / getScreenRows() (diagnostic text form, see zx81-text.js),
-//   getScreenCodes() (the logical screen as raw codes, for a renderer of our own).
+//   getScreenCodes() (the logical screen as raw codes, for a renderer of our own),
+//   getBasicNumber(letter) (a numeric variable of the running BASIC program, or null).
 
 import { EVENTS, Emitter, FRAMES_PER_SECOND } from './emitter.js';
 import { D_FILE, displayFileCodes, displayFileRows } from './zx81-text.js';
+import { VARS, readBasicNumber } from './zx81-vars.js';
 
 export { EVENTS, Emitter, FRAMES_PER_SECOND };
 const PPC = 0x4007; // ZX81 system variable: line number of the statement being executed
@@ -215,6 +217,20 @@ export class RealZX81Emulator extends Emitter {
 
   getScreenText() {
     return this.getScreenRows().join('\n');
+  }
+
+  // Value of a one-letter numeric BASIC variable of the running program (a FOR loop counter
+  // too), or null when the program has not created it yet. See zx81-vars.js.
+  getBasicNumber(letter) {
+    const machine = this._machine();
+    if (!machine) {
+      return null;
+    }
+    const [low, high] = machine.peek(VARS, 2);
+    const vars = low | (high << 8);
+    const bytes = machine.peek(vars, 256);
+    const read = (addr) => (addr >= vars && addr < vars + bytes.length ? bytes[addr - vars] : machine.peek(addr, 1)[0]);
+    return readBasicNumber(read, letter);
   }
 
   _setState(state) {

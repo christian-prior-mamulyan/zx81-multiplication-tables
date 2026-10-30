@@ -55,9 +55,9 @@ test('the page hides the ZX81 end report and shows its own end message', async (
   // what the player sees: a completely blank screen (the report is hidden) and the page's message
   await page.waitForFunction(() => window.zx81Presenter.log.at(-1)?.every((row) => row === ''));
   await expect(page.locator('#zx81-end')).toBeVisible();
-  await expect(page.locator('#zx81-end')).toContainText('Reload');
-  // starting again removes the message
-  await page.click('#zx81-reload');
+  await expect(page.locator('#zx81-end')).toContainText('game is over');
+  // the large button on the screen starts again and removes the overlay
+  await page.click('#zx81-newgame-end');
   await expect(page.locator('#zx81-end')).toBeHidden();
 });
 

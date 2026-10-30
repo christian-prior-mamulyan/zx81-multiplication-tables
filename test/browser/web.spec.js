@@ -17,10 +17,10 @@ test('the normal URL launches the trainer without any debug surface', async ({ p
 
 test('player instructions explain the game', async ({ page }) => {
   await page.goto('/');
-  const howto = page.locator('.howto');
+  const howto = page.locator('#howto');
   await expect(howto).toContainText('Say the answer out loud');
   await expect(howto).toContainText('seconds');
-  await expect(howto).toContainText('Reload');
+  await expect(howto).toContainText('New game');
 });
 
 test('the BASIC program is listed below the emulator', async ({ page }) => {
@@ -37,6 +37,7 @@ test('the BASIC program is listed below the emulator', async ({ page }) => {
 test('the line being executed is highlighted in the listing', async ({ page }) => {
   await page.goto('/?debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.state === 'running');
+  await page.locator('#zx81-program > summary').click(); // the listing is in a closed <details>
   // INPUT P (line 20) waits for the player
   await page.waitForSelector('#zx81-listing [data-line="20"].current');
   expect(await page.evaluate(() => window.zx81.line)).toBe(20);
@@ -56,19 +57,19 @@ test('the keyboard works without clicking the screen first', async ({ page }) =>
   await page.waitForFunction(() => window.zx81.getScreenRows().some((row) => row.includes('3')));
 });
 
-test('the Reload button, outside the simulation, starts the program again', async ({ page }) => {
+test('the New game button, outside the simulation, starts the program again', async ({ page }) => {
   await page.goto('/?debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
   await enterPause(page, 1);
   await page.waitForFunction(() => window.zx81.getScreenRows().some((row) => row.includes('[Q1]'))); // exercise drawn
 
-  expect(await page.locator('iframe #zx81-reload').count()).toBe(0); // the button is not inside the emulator frame
+  expect(await page.locator('iframe #zx81-newgame').count()).toBe(0); // the button is not inside the emulator frame
   // count the program loads, so "the machine was powered on again" is not guessed from frame numbers
   await page.evaluate(() => {
     window.zx81Loads = 0;
     window.zx81.on('program-loaded', () => (window.zx81Loads += 1));
   });
-  await page.click('#zx81-reload');
+  await page.click('#zx81-newgame');
   await page.waitForFunction(() => window.zx81Loads === 1);
   // back at the prompt: no drawing, waiting for the pause input
   await page.waitForFunction(() => {

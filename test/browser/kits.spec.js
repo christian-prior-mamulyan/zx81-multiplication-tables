@@ -27,7 +27,7 @@ test('with the kit present: stylesheets apply, <wa-icon> is defined, the game st
   // the three kit stylesheets were switched from non-blocking "print" to "all" by their onload
   const media = await page.locator('link[href*="webawesome"]').evaluateAll((links) => links.map((l) => l.media));
   expect(media).toEqual(['all', 'all', 'all']);
-  await expect(page.locator('#zx81-reload wa-icon')).toHaveAttribute('data-kit', 'loaded');
+  await expect(page.locator('#zx81-newgame-end wa-icon')).toHaveAttribute('data-kit', 'loaded');
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--stand-in-kit'))).toBe(
     'loaded',
   );
@@ -41,8 +41,8 @@ test('with the kit unreachable: the page is complete and playable without it', a
   await page.goto('/?debug=1&program=hello&speed=8');
   await frameWhenScreenMatches(page, /^HELLO$/);
   expect(await page.evaluate(() => customElements.get('wa-icon'))).toBeUndefined();
-  await expect(page.locator('#zx81-reload')).toBeVisible();
-  await expect(page.locator('#zx81-reload')).toContainText('Reload'); // the text label does not depend on the icon
+  await expect(page.locator('#zx81-newgame')).toBeVisible();
+  await expect(page.locator('#zx81-newgame')).toContainText('NEW GAME'); // the text label does not depend on the icon
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(BASE3);
   await expect(page.locator('#zx81-display')).toBeVisible();
 });

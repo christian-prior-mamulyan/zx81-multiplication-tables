@@ -43,53 +43,62 @@
     <link rel="stylesheet" href="./web/nav.css" />
   </head>
   <body>
-    <main>
+    <header class="page-header">
       <div id="zx81-nav"></div>
+    </header>
+
+    <main>
       <h1>ZX81 Multiplication Trainer</h1>
 
-      <section class="howto" id="howto">
-        <h2>How to play</h2>
-        <ol>
-          <li>Type how many seconds you want to wait (1 to 99) and press Enter.</li>
-          <li>
-            The ZX81 draws a multiplication as rows of small blocks: the number of rows times the number of blocks in a
-            row. The blocks are grouped in fives, across and down, so you can count them.
-          </li>
-          <li><b>Say the answer out loud</b> before the pause is over.</li>
-          <li>The ZX81 then shows the answer. Check yourself.</li>
-          <li>After ten multiplications the screen is cleared. Press <b>Reload</b> to play again.</li>
-        </ol>
-      </section>
+      <div class="layout">
+        <!-- the game comes first: screen, then the number pad on touch screens -->
+        <section class="game" aria-label="Game">
+          <div id="zx81-stage">
+            <canvas id="zx81-display" width="640" height="480" role="img" aria-label="ZX81 screen"></canvas>
+            <div id="zx81-screen"></div>
 
-      <div class="controls">
-        <span id="zx81-status" role="status"></span>
-        <button id="zx81-reload" type="button">
-          <wa-icon name="rotate-right" aria-hidden="true"></wa-icon>
-          Reload
-        </button>
+            <!-- shown over the screen when the trainer has ended (the program just clears the screen and stops) -->
+            <div id="zx81-end" class="end" role="status" hidden>
+              <p class="end-text">The game is over.</p>
+              <button id="zx81-newgame-end" class="end-button" type="button">
+                <wa-icon name="rotate-right" aria-hidden="true"></wa-icon> New game
+              </button>
+            </div>
+          </div>
+
+          <p id="zx81-status" class="status" role="status" aria-live="polite"></p>
+
+          <!-- number pad for touch screens: the ZX81 keyboard without a keyboard -->
+          <div id="zx81-keypad" class="keypad" role="group" aria-label="Number pad" hidden></div>
+        </section>
+
+        <aside class="side" aria-label="Instructions and program">
+          <details class="panel" id="howto" open>
+            <summary>How to play</summary>
+            <ol>
+              <li>Type how many seconds you want to wait (1 to 99) and press Enter.</li>
+              <li>
+                The ZX81 draws a multiplication as rows of small blocks: the number of rows times the number of blocks
+                in a row. The blocks are grouped in fives, across and down, so you can count them.
+              </li>
+              <li><b>Say the answer out loud</b> before the pause is over.</li>
+              <li>The ZX81 then shows the answer. Check yourself.</li>
+              <li>After ten multiplications the screen is cleared. Press <b>New game</b> to play again.</li>
+            </ol>
+          </details>
+
+          <details class="panel" id="zx81-program" hidden>
+            <summary id="zx81-program-title">The program</summary>
+            <p class="hint">
+              A real ZX81 BASIC program running in an emulated ZX81. In the listing, <code>\'</code> stands for the ZX81
+              quarter-block character (top-left quarter).
+            </p>
+            <pre id="zx81-listing"></pre>
+          </details>
+        </aside>
       </div>
 
-      <div id="zx81-stage">
-        <canvas id="zx81-display" width="640" height="480" role="img" aria-label="ZX81 screen"></canvas>
-        <div id="zx81-screen"></div>
-      </div>
-
-      <!-- shown by the page when the trainer has ended (the program just clears the screen and stops) -->
-      <p id="zx81-end" class="end" role="status" hidden>The game is over. Press <b>Reload</b> to play again.</p>
-
-      <!-- number pad for touch screens: the ZX81 keyboard without a keyboard -->
-      <div id="zx81-keypad" class="keypad" role="group" aria-label="Number pad" hidden></div>
-
-      <section id="zx81-program" hidden>
-        <h2>The program</h2>
-        <p class="hint">
-          A real ZX81 BASIC program running in an emulated ZX81. In the listing, <code>\'</code> stands for the ZX81
-          quarter-block character (top-left quarter).
-        </p>
-        <pre id="zx81-listing"></pre>
-      </section>
-
-      <aside id="zx81-debug" hidden></aside>
+      <aside id="zx81-debug" aria-label="Developer panel" hidden></aside>
     </main>
     <noscript><p>This page runs a ZX81 emulator and needs JavaScript.</p></noscript>
     <script type="module" src="./web/app.js"></script>

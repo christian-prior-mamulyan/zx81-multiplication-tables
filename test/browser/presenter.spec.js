@@ -97,17 +97,19 @@ test('the real keyboard reaches the emulated ZX81 from anywhere on the page', as
   await frameWhenScreenMatches(page, /^\{L\}$/);
 });
 
-test('Reload sits above the emulator, aligned to its right edge', async ({ page }) => {
+test('New game sits in the status bar, above the screen, at the right end', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
-  const button = await page.locator('#zx81-reload').boundingBox();
+  const button = await page.locator('nav.nav-status #zx81-newgame').boundingBox();
+  const bar = await page.locator('nav.nav-status').boundingBox();
   const stage = await page.locator('#zx81-stage').boundingBox();
   expect(button.y + button.height).toBeLessThanOrEqual(stage.y);
-  expect(Math.abs(button.x + button.width - (stage.x + stage.width))).toBeLessThanOrEqual(2);
+  expect(Math.abs(button.x + button.width - (bar.x + bar.width))).toBeLessThanOrEqual(40); // the right end of the bar (its padding)
 });
 
-test('after Reload the focus is off the button so Enter does not press it again', async ({ page }) => {
+test('after New game the focus is off the button so Enter does not press it again', async ({ page }) => {
   await page.goto('/?debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
-  await page.click('#zx81-reload');
-  expect(await page.evaluate(() => document.activeElement?.id)).not.toBe('zx81-reload');
+  await page.click('#zx81-newgame');
+  expect(await page.evaluate(() => document.activeElement?.id)).not.toBe('zx81-newgame');
 });

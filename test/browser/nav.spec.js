@@ -68,7 +68,7 @@ for (const [label, size] of [
     await page.setViewportSize(size);
     await page.goto('/');
     const info = await page.locator('nav.nav-status').evaluate((nav) => {
-      const items = [...nav.querySelectorAll('.title, dl, .action')];
+      const items = [...nav.querySelectorAll('.title, .cells, .action')];
       const tops = items.map((node) => Math.round(node.getBoundingClientRect().top));
       const style = getComputedStyle(nav);
       return {
@@ -99,7 +99,8 @@ test('text is readable: 4.5:1, or 3:1 for large bold text', async ({ page }) => 
     'nav.nav-status .title',
     'nav.nav-status dt',
     'nav.nav-status dd',
-    'nav.nav-status .action',
+    'nav.nav-status .listing',
+    'nav.nav-status .new-game',
   ]) {
     const { ratio, px, weight } = await measure(page, selector);
     const large = px >= 18.66 && weight >= 700;
@@ -113,21 +114,21 @@ test('the bar looks the same whatever the page theme', async ({ page }) => {
   await expect(page.locator('nav.nav-status')).toHaveCSS('background-color', ORANGE);
 });
 
-test('it shows the real emulator: state, BASIC line and emulated time', async ({ page }) => {
+test('it shows the real emulator: phase, BASIC line and exercise number', async ({ page }) => {
   await page.goto('/?debug=1&program=trainer-seeded&speed=8');
   await page.waitForFunction(() => window.zx81?.getScreenRows().includes('{L}'));
-  await expect(status(page, 'state')).toHaveText('RUNNING');
+  await expect(status(page, 'phase')).toHaveText('INPUT');
   await expect(status(page, 'line')).toHaveText('20'); // INPUT P waits in line 20
+  await expect(status(page, 'exercise')).toHaveText('–'); // the loop counter N does not exist yet
   await enterPause(page, 5);
   await expect(status(page, 'line')).toHaveText('150', { timeout: 20_000 }); // PAUSE P*50
-  await page.waitForFunction(
-    () => document.querySelector('nav.nav-status [data-status="time"]').textContent !== '00:00',
-  );
+  await expect(status(page, 'phase')).toHaveText('PAUSE');
+  await expect(status(page, 'exercise')).toHaveText('1/10');
 });
 
 test('the LISTING link leads to the program listing', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('nav.nav-status .action')).toHaveAttribute('href', '#zx81-program');
+  await expect(page.locator('nav.nav-status .listing')).toHaveAttribute('href', '#zx81-program');
   expect(await page.locator('#zx81-program').count()).toBe(1);
 });
 
@@ -140,6 +141,6 @@ test('the bar works under a subdirectory too', async ({ page }) => {
   });
   await page.goto('/zx81-trainer/?debug=1&speed=8');
   await expect(page.locator('nav.nav-status')).toBeVisible();
-  await expect(status(page, 'state')).toHaveText('RUNNING');
+  await expect(status(page, 'phase')).toHaveText(/\S/);
   expect(failed).toEqual([]);
 });

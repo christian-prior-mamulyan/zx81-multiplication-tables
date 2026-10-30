@@ -1,0 +1,12 @@
+{
+  "program": "trainer",
+  "exercises": 10,
+  "counter": "N",
+  "phases": [
+    { "from": 1, "to": 25, "id": "input", "label": "INPUT" },
+    { "from": 30, "to": 140, "id": "drawing", "label": "DRAWING" },
+    { "from": 150, "to": 150, "id": "pause", "label": "PAUSE" },
+    { "from": 165, "to": 190, "id": "answer", "label": "ANSWER" },
+    { "from": 200, "to": 200, "id": "finished", "label": "DONE" }
+  ]
+}

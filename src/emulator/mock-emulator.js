@@ -134,6 +134,14 @@ export class MockZX81Emulator extends Emitter {
     return this.rows.join('\n');
   }
 
+  // the mock "runs" exercise N = 1, 2, 3 ... one every 20 frames from frame 3; other variables do not exist
+  getBasicNumber(letter) {
+    if (letter.toUpperCase() !== 'N' || this.frame < 3) {
+      return null;
+    }
+    return Math.min(10, 1 + Math.floor((this.frame - 3) / 20));
+  }
+
   async captureScreen() {
     return new Blob([this.getScreenText()], { type: 'text/plain' });
   }
