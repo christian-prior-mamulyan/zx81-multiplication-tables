@@ -323,9 +323,14 @@ button {
     monospace;
 }
 
+/* a line that is too long wraps, and its continuation lines are indented under the code (the line number
+   column is 4 characters wide), so no sideways scrollbar is needed */
 #zx81-listing .line {
   display: block;
-  white-space: pre;
+  padding-left: 4ch;
+  text-indent: -4ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* the line the emulated ZX81 is executing, in Solarized orange */
