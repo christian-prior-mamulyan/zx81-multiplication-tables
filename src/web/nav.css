@@ -72,7 +72,7 @@
   color: var(--cream);
 }
 
-/* LISTING and NEW GAME: dark buttons at the right end */
+/* NEW GAME: dark button at the right end */
 .nav-status .action {
   display: block;
   padding: 0.7rem 1rem;
@@ -86,7 +86,7 @@
   cursor: pointer;
 }
 
-.nav-status .listing {
+.nav-status .new-game {
   margin-left: auto;
 }
 

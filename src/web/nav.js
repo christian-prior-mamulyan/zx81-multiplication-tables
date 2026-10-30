@@ -1,7 +1,7 @@
 // The page's navigation bar: a horizontal game status bar in Solarized orange (nav.css).
 // It shows what the game is doing, live from the emulator: the phase (waiting for input, drawing,
 // pause, answer, done), the BASIC line being executed and the exercise number, plus a link to the
-// program listing and the New game button. On a phone it scrolls sideways instead of wrapping.
+// New game button. On a phone it scrolls sideways instead of wrapping.
 
 import { exerciseLabel, phaseForLine } from './phases.js';
 
@@ -28,7 +28,6 @@ export function buildNav({ onNewGame } = {}) {
     { class: 'site-nav nav-status', 'aria-label': 'Game status' },
     el('span', { class: 'title' }, 'ZX81'),
     el('div', { class: 'cells' }, cell('phase'), cell('line'), cell('exercise')),
-    el('a', { class: 'action listing', href: '#zx81-program' }, 'LISTING'),
     newGame,
   );
   const set = (name, text) => {

@@ -106,7 +106,7 @@ code {
 
 @media (width >= 56rem) {
   .layout {
-    grid-template-columns: minmax(0, 40rem) minmax(16rem, 1fr);
+    grid-template-columns: minmax(0, 40rem) minmax(24rem, 1fr);
     align-items: start;
     gap: var(--space-5);
   }
@@ -311,14 +311,13 @@ button {
 
 /* the program listing */
 #zx81-listing {
-  overflow: auto;
-  max-height: 28rem;
+  overflow-x: auto; /* only if a very narrow screen needs it; the box is never taller than its content */
   margin: 0 0 var(--space-2);
   padding: var(--space-2) var(--space-3);
   background: var(--base2);
   color: var(--base01);
   font:
-    0.85rem/1.5 ui-monospace,
+    0.8rem/1.5 ui-monospace,
     'Cascadia Mono',
     Consolas,
     monospace;

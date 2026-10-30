@@ -99,7 +99,6 @@ test('text is readable: 4.5:1, or 3:1 for large bold text', async ({ page }) => 
     'nav.nav-status .title',
     'nav.nav-status dt',
     'nav.nav-status dd',
-    'nav.nav-status .listing',
     'nav.nav-status .new-game',
   ]) {
     const { ratio, px, weight } = await measure(page, selector);
@@ -126,10 +125,10 @@ test('it shows the real emulator: phase, BASIC line and exercise number', async 
   await expect(status(page, 'exercise')).toHaveText('1/10');
 });
 
-test('the LISTING link leads to the program listing', async ({ page }) => {
+test('the only action in the bar is New game', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('nav.nav-status .listing')).toHaveAttribute('href', '#zx81-program');
-  expect(await page.locator('#zx81-program').count()).toBe(1);
+  await expect(page.locator('nav.nav-status .action')).toHaveCount(1);
+  await expect(page.locator('nav.nav-status .action')).toHaveId('zx81-newgame');
 });
 
 test('the bar works under a subdirectory too', async ({ page }) => {

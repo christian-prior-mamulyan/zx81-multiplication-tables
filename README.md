@@ -31,8 +31,8 @@ page's JavaScript.
   `career.cprima.net`** (kit settings at fontawesome.com and webawesome.com), otherwise the page
   simply looks as it does without them.
 - **Navigation bar:** one horizontal status bar in Solarized orange (`src/web/nav.js`,
-  `nav.css`): the ZX81 state, the BASIC line being executed and the emulated time, live from the
-  emulator, plus a LISTING link. On a phone it scrolls sideways instead of wrapping.
+  `nav.css`): the phase, the BASIC line being executed and the exercise number, live from the
+  emulator, plus the New game button. On a phone it scrolls sideways instead of wrapping.
 - **Phones:** one fluid column, the screen fills the width at 4:3, notch-safe spacing, touch
   targets of at least 44 px, no double-tap zoom delay, and an on-screen **number pad** (digits,
   delete, Enter) on touch screens, because a canvas shows no soft keyboard. `?keypad=1` shows the
