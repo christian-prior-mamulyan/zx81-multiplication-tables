@@ -4,6 +4,8 @@ A circa-1982 ZX81 BASIC multiplication trainer, run in the browser as a **real Z
 inside an emulated ZX81**. JavaScript only hosts, instruments and presents it; the BASIC program is
 never reimplemented in JavaScript.
 
+![The trainer: a pause is typed, the ZX81 draws a multiplication as blocks while the BASIC line being executed moves through the listing, then the answer appears](docs/demo.gif)
+
 The use: a player says the answer **out loud** before the program shows it. Ten multiplication
 exercises per run. Each is drawn as a rows of b quarter blocks, with a and b between 2 and 10 (ZX81
 semigraphics code 1, so every unit is visibly separated), and a gap after every fifth block across
@@ -121,7 +123,14 @@ just capture        # artifacts/screen.png, debug.txt, display-file.bin for a kn
 just lint           # ESLint, Prettier check, Stylelint, html-validate, type check, knip
 just format         # rewrite all files in the project's code style
 just ci             # lint, then the unit tests
+just gif            # the animation at the top: rushes, then the cut (needs ffmpeg)
 ```
+
+`just gif` plays the first two exercises and photographs every screen change into
+`artifacts/rushes/` (`just rushes`), then cuts them into `artifacts/demo.gif` following
+`tools/gif-playbook.json` (`just gif-edit`, which can be re-run alone). The brief and the playbook
+are explained in [docs/gif-video-brief.md](docs/gif-video-brief.md). Copy the result to
+`docs/demo.gif` to update the README.
 
 `just lint-shell`, `just lint-py`, `just lint-md` and `just lint-actions` check the shell scripts,
 the Python helper, the Markdown and the workflows (the tools are fetched on demand through uv).
