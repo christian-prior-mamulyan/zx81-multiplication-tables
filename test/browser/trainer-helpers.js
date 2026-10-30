@@ -24,7 +24,9 @@ export function expectedExercises(seed, count) {
 // blocks (ZX81 code 1), a gap after every fifth block, a blank row after the fifth row when more
 // rows follow. A blank row above the answer is not part of this layout (see parseExercise).
 export function expectedLayout(a, b) {
-  const row = Array.from({ length: b }, (_, j) => '[Q1]' + (j === 4 ? ' ' : '')).join('').trimEnd();
+  const row = Array.from({ length: b }, (_, j) => '[Q1]' + (j === 4 ? ' ' : ''))
+    .join('')
+    .trimEnd();
   const rows = [];
   for (let i = 1; i <= a; i++) {
     rows.push(row);
@@ -115,11 +117,18 @@ export async function enterPause(page, pause) {
   for (let retry = 0; retry <= 2; retry++) {
     const started = await page
       .waitForFunction(() => window.zx81.line >= 25, undefined, { timeout: 5_000 })
-      .then(() => true, () => false);
+      .then(
+        () => true,
+        () => false,
+      );
     if (started) return;
     const rows = await page.evaluate(() => window.zx81.getScreenRows());
     if (retry === 2) {
-      const info = await page.evaluate(() => ({ line: window.zx81.line, frame: window.zx81.frame, rows: window.zx81.getScreenRows().filter(Boolean) }));
+      const info = await page.evaluate(() => ({
+        line: window.zx81.line,
+        frame: window.zx81.frame,
+        rows: window.zx81.getScreenRows().filter(Boolean),
+      }));
       throw new Error(`the trainer did not start after the pause input ${pause}: ${JSON.stringify(info)}`);
     }
     if (rows.includes(`${digits}{L}`)) {
@@ -153,7 +162,12 @@ export function collectExercises(page, count) {
           if (frame - startFrame > 20_000) {
             // far more emulated time than ten exercises of up to 12 seconds need: give up with what we have
             off();
-            resolve({ exercises: done, finished: false, printed, timedOut: { line: window.zx81.line, rows: rows.filter(Boolean) } });
+            resolve({
+              exercises: done,
+              finished: false,
+              printed,
+              timedOut: { line: window.zx81.line, rows: rows.filter(Boolean) },
+            });
             return;
           }
           const shown = parse(rows);
@@ -161,7 +175,11 @@ export function collectExercises(page, count) {
 
           // an exercise ends when its answer disappears (the next one clears the screen); the
           // answer is printed digit by digit, so a changing answer is the same exercise
-          if (cur && cur.answer !== null && !(shown && shown.answer !== null && shown.a === cur.a && shown.b === cur.b)) {
+          if (
+            cur &&
+            cur.answer !== null &&
+            !(shown && shown.answer !== null && shown.a === cur.a && shown.b === cur.b)
+          ) {
             close();
           }
           if (shown) {

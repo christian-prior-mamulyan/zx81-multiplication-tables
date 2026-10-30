@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "html-validate:recommended"
-  ],
+  "extends": ["html-validate:recommended"],
   "elements": [
     "html5",
     {
@@ -28,10 +26,7 @@
             "boolean": true
           },
           "keys": {
-            "enum": [
-              "document",
-              "focus"
-            ]
+            "enum": ["document", "focus"]
           }
         }
       }

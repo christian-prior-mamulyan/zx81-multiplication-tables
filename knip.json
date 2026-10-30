@@ -1,22 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": [
-    "src/web/app.js",
-    "src/web/charset.js",
-    "tools/*.js",
-    "test/**/*.js"
-  ],
-  "project": [
-    "src/**/*.js",
-    "tools/**/*.js",
-    "test/**/*.js"
-  ],
-  "ignore": [
-    "src/emulator/zx81/**"
-  ],
+  "entry": ["src/web/app.js", "src/web/charset.js", "tools/*.js", "test/**/*.js"],
+  "project": ["src/**/*.js", "tools/**/*.js", "test/**/*.js"],
+  "ignore": ["src/emulator/zx81/**"],
   "ignoreDependencies": [],
-  "ignoreBinaries": [
-    "just"
-  ],
+  "ignoreBinaries": ["just"],
   "ignoreExportsUsedInFile": true
 }

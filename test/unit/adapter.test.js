@@ -31,7 +31,20 @@ test('key events carry what the emulator keyboard code reads', () => {
 test('createEmulator selects the mock without changing the interface', async () => {
   const emulator = await createEmulator({ kind: 'mock', scenario: 'normal', MockClass: MockZX81Emulator });
   assert.ok(emulator instanceof MockZX81Emulator);
-  for (const method of ['loadProgram', 'reset', 'start', 'stop', 'keyDown', 'keyUp', 'focus', 'getScreen', 'captureScreen', 'getMemory', 'setMemory', 'on']) {
+  for (const method of [
+    'loadProgram',
+    'reset',
+    'start',
+    'stop',
+    'keyDown',
+    'keyUp',
+    'focus',
+    'getScreen',
+    'captureScreen',
+    'getMemory',
+    'setMemory',
+    'on',
+  ]) {
     assert.equal(typeof emulator[method], 'function', method);
   }
 });

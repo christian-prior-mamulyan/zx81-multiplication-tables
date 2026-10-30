@@ -26,7 +26,12 @@ function clock() {
 function setup(options = {}) {
   const c = clock();
   const events = [];
-  const queue = new KeyQueue({ send: (type, key) => events.push([type, key, c.now()]), now: c.now, schedule: c.schedule, ...options });
+  const queue = new KeyQueue({
+    send: (type, key) => events.push([type, key, c.now()]),
+    now: c.now,
+    schedule: c.schedule,
+    ...options,
+  });
   return { c, events, queue };
 }
 
@@ -43,7 +48,10 @@ test('a quick tap is held for the minimum time before it is released', () => {
   c.advance(59);
   assert.deepEqual(events, [['down', '5', 0]]); // still held
   c.advance(1);
-  assert.deepEqual(events, [['down', '5', 0], ['up', '5', 60]]);
+  assert.deepEqual(events, [
+    ['down', '5', 0],
+    ['up', '5', 60],
+  ]);
 });
 
 test('a key held longer than the minimum is released at once', () => {
@@ -83,7 +91,10 @@ test('at no time are two keys down at once for taps', () => {
     assert.ok(down <= 1, 'more than one key down');
   }
   assert.equal(down, 0);
-  assert.deepEqual(events.filter(([type]) => type === 'down').map(([, key]) => key), ['1', '2', '3', 'Enter']);
+  assert.deepEqual(
+    events.filter(([type]) => type === 'down').map(([, key]) => key),
+    ['1', '2', '3', 'Enter'],
+  );
 });
 
 test('hold and gap can be changed', () => {

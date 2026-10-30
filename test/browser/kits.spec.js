@@ -26,7 +26,9 @@ test('with the kit present: stylesheets apply, <wa-icon> is defined, the game st
   const media = await page.locator('link[href*="webawesome"]').evaluateAll((links) => links.map((l) => l.media));
   expect(media).toEqual(['all', 'all', 'all']);
   await expect(page.locator('#zx81-reload wa-icon')).toHaveAttribute('data-kit', 'loaded');
-  expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--stand-in-kit'))).toBe('loaded');
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--stand-in-kit'))).toBe(
+    'loaded',
+  );
   await frameWhenScreenMatches(page, /^HELLO$/);
   // the Font Awesome kit code is on the page, for the Pro icons
   await expect(page.locator('html')).toHaveAttribute('data-fa-kit-code', '5df958b77d');
@@ -66,6 +68,8 @@ test('no Font Awesome Pro or Web Awesome files are part of the repository', asyn
   // Pro assets must never be committed (the repository is public): only the kit code and URLs appear
   const { execFileSync } = await import('node:child_process');
   const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' }).split('\n');
-  const offenders = files.filter((file) => /\.(woff2?|ttf|otf|eot)$/i.test(file) || /(fontawesome|webawesome|fa-pro)/i.test(file));
+  const offenders = files.filter(
+    (file) => /\.(woff2?|ttf|otf|eot)$/i.test(file) || /(fontawesome|webawesome|fa-pro)/i.test(file),
+  );
   expect(offenders).toEqual([]);
 });

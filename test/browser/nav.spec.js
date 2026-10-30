@@ -27,7 +27,11 @@ const measure = (page, selector) =>
     const fg = luminance(parse(style.color));
     const bg = luminance(background);
     const [hi, lo] = fg > bg ? [fg, bg] : [bg, fg];
-    return { ratio: (hi + 0.05) / (lo + 0.05), px: Number.parseFloat(style.fontSize), weight: Number(style.fontWeight) };
+    return {
+      ratio: (hi + 0.05) / (lo + 0.05),
+      px: Number.parseFloat(style.fontSize),
+      weight: Number(style.fontWeight),
+    };
   }, selector);
 
 const status = (page, name) => page.locator(`nav.nav-status [data-status="${name}"]`);
@@ -54,7 +58,10 @@ test('the bar is Solarized orange all over, with a dark rule below', async ({ pa
   await expect(page.locator('nav.nav-status dt').first()).toHaveCSS('background-color', 'rgb(253, 246, 227)'); // cream tags
 });
 
-for (const [label, size] of [['desktop', { width: 1280, height: 900 }], ['phone', { width: 390, height: 844 }]]) {
+for (const [label, size] of [
+  ['desktop', { width: 1280, height: 900 }],
+  ['phone', { width: 390, height: 844 }],
+]) {
   test(`the bar is one horizontal row on a ${label} (scrolls sideways when too narrow)`, async ({ page }) => {
     await page.setViewportSize(size);
     await page.goto('/');
@@ -86,7 +93,12 @@ test('on a normal desktop width the whole bar fits without scrolling', async ({ 
 
 test('text is readable: 4.5:1, or 3:1 for large bold text', async ({ page }) => {
   await page.goto('/');
-  for (const selector of ['nav.nav-status .title', 'nav.nav-status dt', 'nav.nav-status dd', 'nav.nav-status .action']) {
+  for (const selector of [
+    'nav.nav-status .title',
+    'nav.nav-status dt',
+    'nav.nav-status dd',
+    'nav.nav-status .action',
+  ]) {
     const { ratio, px, weight } = await measure(page, selector);
     const large = px >= 18.66 && weight >= 700;
     expect(ratio, `${selector} contrast ${ratio.toFixed(2)} at ${px}px`).toBeGreaterThanOrEqual(large ? 3 : 4.5);
@@ -106,7 +118,9 @@ test('it shows the real emulator: state, BASIC line and emulated time', async ({
   await expect(status(page, 'line')).toHaveText('20'); // INPUT P waits in line 20
   await enterPause(page, 5);
   await expect(status(page, 'line')).toHaveText('150', { timeout: 20_000 }); // PAUSE P*50
-  await page.waitForFunction(() => document.querySelector('nav.nav-status [data-status="time"]').textContent !== '00:00');
+  await page.waitForFunction(
+    () => document.querySelector('nav.nav-status [data-status="time"]').textContent !== '00:00',
+  );
 });
 
 test('the LISTING link leads to the program listing', async ({ page }) => {

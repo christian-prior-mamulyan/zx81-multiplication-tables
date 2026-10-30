@@ -76,7 +76,10 @@ export default [
     files: ['src/emulator/**/*.js', 'packages/zx81-emulator/src/**/*.js'],
     ignores: ['**/emulator-adapter.js'],
     rules: {
-      'no-restricted-globals': ['error', ...PAGE_GLOBALS.map((name) => ({ name, message: 'the emulator package must not touch the page' }))],
+      'no-restricted-globals': [
+        'error',
+        ...PAGE_GLOBALS.map((name) => ({ name, message: 'the emulator package must not touch the page' })),
+      ],
     },
   },
 ];

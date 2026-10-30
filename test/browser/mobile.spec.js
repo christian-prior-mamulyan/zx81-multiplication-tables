@@ -10,7 +10,9 @@ test.describe('phone (touch)', () => {
   test('the page does not scroll sideways and the viewport is set for phones', async ({ page }) => {
     await page.goto('/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
-    expect(await page.evaluate(() => document.querySelector('meta[name="viewport"]').content)).toContain('width=device-width');
+    expect(await page.evaluate(() => document.querySelector('meta[name="viewport"]').content)).toContain(
+      'width=device-width',
+    );
     expect(await page.evaluate(() => document.querySelector('meta[name="theme-color"]').content)).toBe('#cb4b16');
   });
 
@@ -30,9 +32,20 @@ test.describe('phone (touch)', () => {
     await expect(pad).toBeVisible();
     const keys = pad.locator('button');
     await expect(keys).toHaveCount(12);
-    expect(await keys.evaluateAll((buttons) => buttons.map((b) => b.dataset.key))).toEqual(
-      ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace', '0', 'Enter'],
-    );
+    expect(await keys.evaluateAll((buttons) => buttons.map((b) => b.dataset.key))).toEqual([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      'Backspace',
+      '0',
+      'Enter',
+    ]);
     for (const box of await keys.evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().toJSON()))) {
       expect(box.height, 'touch target height').toBeGreaterThanOrEqual(44);
       expect(box.width, 'touch target width').toBeGreaterThanOrEqual(44);
@@ -90,7 +103,9 @@ test.describe('phone (touch)', () => {
   test('the navigation bar scrolls sideways on a phone and does not widen the page', async ({ page }) => {
     await page.goto('/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
-    const nav = await page.locator('nav.nav-status').evaluate((bar) => ({ scrolls: bar.scrollWidth > bar.clientWidth, overflowX: getComputedStyle(bar).overflowX }));
+    const nav = await page
+      .locator('nav.nav-status')
+      .evaluate((bar) => ({ scrolls: bar.scrollWidth > bar.clientWidth, overflowX: getComputedStyle(bar).overflowX }));
     expect(nav).toEqual({ scrolls: true, overflowX: 'auto' }); // wider than a 390px phone, so it scrolls inside its own box
   });
 });
@@ -117,7 +132,9 @@ test.describe('landscape phone', () => {
 
   test('the pad switches to one row of six so screen and pad can both be seen', async ({ page }) => {
     await page.goto('/?keypad=1');
-    const columns = await page.locator('#zx81-keypad').evaluate((pad) => getComputedStyle(pad).gridTemplateColumns.split(' ').length);
+    const columns = await page
+      .locator('#zx81-keypad')
+      .evaluate((pad) => getComputedStyle(pad).gridTemplateColumns.split(' ').length);
     expect(columns).toBe(6);
   });
 });

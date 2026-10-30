@@ -98,7 +98,10 @@ test('the pause input is in seconds', async ({ context }) => {
     const frames = await pauseFrames(page);
     await page.close();
     const expected = pause * 50;
-    expect(Math.abs(frames - expected), `pause ${pause} s took ${frames} frames, expected ${expected}`).toBeLessThanOrEqual(Math.max(4, expected * 0.04));
+    expect(
+      Math.abs(frames - expected),
+      `pause ${pause} s took ${frames} frames, expected ${expected}`,
+    ).toBeLessThanOrEqual(Math.max(4, expected * 0.04));
   }
 });
 

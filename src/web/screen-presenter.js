@@ -107,7 +107,8 @@ export class ScreenPresenter {
           const bits = code & 128 ? ~this.rom[base + y] & 0xff : this.rom[base + y];
           if (bits === 0) continue;
           for (let x = 0; x < 8; x++) {
-            if (bits & (0x80 >> x)) ctx.fillRect(this.origin.x + (c * 8 + x) * s, this.origin.y + (r * 8 + y) * s, s, s);
+            if (bits & (0x80 >> x))
+              ctx.fillRect(this.origin.x + (c * 8 + x) * s, this.origin.y + (r * 8 + y) * s, s, s);
           }
         }
       }

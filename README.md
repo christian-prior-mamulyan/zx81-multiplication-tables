@@ -56,15 +56,15 @@ Python file server), and a C compiler for `zxtext2p` (native `gcc`, or `gcc` ins
 
 ## Pages and URL parameters
 
-| URL | What |
-|-----|------|
-| `/` | launches the trainer |
-| `/?program=NAME` | runs `tapes/NAME.p.hex` (hello, arithmetic, graphics, keyboard, delay, line0, trainer, trainer-seeded) |
-| `/?debug=1` | developer panel (state, frame, emulated time, last key, PC, memory, pause/run/step, reset, PNG capture); `window.zx81` is the adapter |
-| `/?emulator=mock&scenario=normal` | mock emulator, no Z80; scenarios `normal`, `slow`, `load-error`, `runtime-error`, `blank-screen`, `finished` |
-| `/?speed=0..8` | emulator speed index (4 = real time, 8 = 10x); emulated frame counts do not change |
-| `/?renderer=emulator` | show the emulator's own TV-raster picture instead of the page's drawing of the screen (see below) |
-| `/debug/charset.html` | every ZX81 semigraphics character, drawn from the ROM bitmaps |
+| URL                               | What                                                                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                               | launches the trainer                                                                                                                  |
+| `/?program=NAME`                  | runs `tapes/NAME.p.hex` (hello, arithmetic, graphics, keyboard, delay, line0, trainer, trainer-seeded)                                |
+| `/?debug=1`                       | developer panel (state, frame, emulated time, last key, PC, memory, pause/run/step, reset, PNG capture); `window.zx81` is the adapter |
+| `/?emulator=mock&scenario=normal` | mock emulator, no Z80; scenarios `normal`, `slow`, `load-error`, `runtime-error`, `blank-screen`, `finished`                          |
+| `/?speed=0..8`                    | emulator speed index (4 = real time, 8 = 10x); emulated frame counts do not change                                                    |
+| `/?renderer=emulator`             | show the emulator's own TV-raster picture instead of the page's drawing of the screen (see below)                                     |
+| `/debug/charset.html`             | every ZX81 semigraphics character, drawn from the ROM bitmaps                                                                         |
 
 ### How the screen is shown
 

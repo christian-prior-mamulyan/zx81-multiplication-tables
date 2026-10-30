@@ -3,7 +3,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-const html = readFileSync('src/web/index.html', 'utf8');
+// Prettier lays HTML out over several lines and writes `<meta ... />`; compare the markup, not its layout.
+const normalize = (source) =>
+  source
+    .replaceAll(/\s+/g, ' ')
+    .replaceAll(/\s*\/>/g, '>')
+    .replaceAll(/>\s+</g, '><');
+const html = normalize(readFileSync('src/web/index.html', 'utf8'));
 const css = readFileSync('src/web/app.css', 'utf8');
 
 test('the viewport is set for phones, including the notch', () => {
@@ -16,17 +22,22 @@ test('the Font Awesome Pro kit code is on the html element (domain-locked, safe 
 });
 
 test('Web Awesome loads from the kit: theme, utilities, native reset, then the loader', () => {
-  const sheets = [...html.matchAll(/<link rel="stylesheet" href="(https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+)"([^>]*)>/g)];
+  const sheets = [
+    ...html.matchAll(/<link rel="stylesheet" href="(https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+)"([^>]*)>/g),
+  ];
   assert.deepEqual(
     sheets.map((m) => m[1].split('/styles/')[1]),
     ['themes/default.css', 'utilities.css', 'native.css'],
   );
   for (const [, , rest] of sheets) {
     // non-blocking: a slow or unreachable kit must not keep the page blank
-    assert.match(rest, /media="print" onload="this\.media='all'"/);
+    assert.match(rest, /media="print" onload="this\.media\s*=\s*'all'"/);
   }
   // async: a hanging kit server must not hold back the game's own module script
-  assert.match(html, /<script type="module" async src="https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+\/webawesome\.loader\.js"><\/script>/);
+  assert.match(
+    html,
+    /<script type="module" async src="https:\/\/ka-p\.webawesome\.com\/kit\/[^"]+\/webawesome\.loader\.js"><\/script>/,
+  );
 });
 
 test('the identity stylesheet comes after the kit so it wins over the kit defaults', () => {

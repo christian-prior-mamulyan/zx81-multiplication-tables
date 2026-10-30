@@ -18,7 +18,11 @@
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none;
-  font: 700 1.2rem/1.2 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font:
+    700 1.2rem/1.2 ui-monospace,
+    'Cascadia Mono',
+    Consolas,
+    monospace;
   letter-spacing: 0.03em;
 }
 

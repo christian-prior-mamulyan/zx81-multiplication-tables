@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { SCREEN_COLUMNS, SCREEN_ROWS, displayFileCodes } from '../../src/emulator/zx81-text.js';
-import { HOLD_FRAMES, createPresenterState, isBlank, isRemoval, planFrame, sameScreen } from '../../src/web/screen-presenter.js';
+import {
+  HOLD_FRAMES,
+  createPresenterState,
+  isBlank,
+  isRemoval,
+  planFrame,
+  sameScreen,
+} from '../../src/web/screen-presenter.js';
 
 const blank = () => Array.from({ length: SCREEN_ROWS }, () => Array(SCREEN_COLUMNS).fill(0));
 // a screen with the given cells set: [[row, column, code], ...]

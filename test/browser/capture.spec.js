@@ -27,7 +27,10 @@ test('capture is deterministic and shows the known first exercise', async ({ con
     const text = readFileSync(join(dirs[0], 'debug.txt'), 'utf8');
     // the screen part of debug.txt (without the "#" comment lines) shows the drawing and the answer,
     // and no multiplication printed as numbers
-    const screen = text.split('\n').filter((line) => !line.startsWith('#')).join('\n');
+    const screen = text
+      .split('\n')
+      .filter((line) => !line.startsWith('#'))
+      .join('\n');
     expect(screen).not.toMatch(/\d+\s*[Xx*]\s*\d+/);
     const layout = expectedLayout(a, b);
     expect(screen.split('\n').slice(0, layout.length)).toEqual(layout);

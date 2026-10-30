@@ -6,7 +6,11 @@ import { startTrainer } from './trainer-helpers.js';
 
 // colour of one canvas pixel as [r, g, b]
 const pixel = (page, x, y) =>
-  page.evaluate(([px, py]) => [...document.getElementById('zx81-display').getContext('2d').getImageData(px, py, 1, 1).data].slice(0, 3), [x, y]);
+  page.evaluate(
+    ([px, py]) =>
+      [...document.getElementById('zx81-display').getContext('2d').getImageData(px, py, 1, 1).data].slice(0, 3),
+    [x, y],
+  );
 const dark = ([r, g, b]) => r + g + b < 60;
 const light = ([r, g, b]) => r + g + b > 600;
 
@@ -14,7 +18,9 @@ test('the ZX81 screen is drawn from the ROM bitmaps on the page canvas', async (
   await page.goto('/?debug=1&program=graphics&speed=8');
   await expect(page.locator('#zx81-display')).toBeVisible();
   await expect(page.locator('#zx81-stage')).toHaveClass(/presented/);
-  await page.waitForFunction(() => window.zx81Presenter?.log.some((rows) => rows.some((row) => row.includes('[Q138]'))));
+  await page.waitForFunction(() =>
+    window.zx81Presenter?.log.some((rows) => rows.some((row) => row.includes('[Q138]'))),
+  );
   // text row 0 starts at canvas (64, 48); each ZX81 pixel is 2x2 canvas pixels, a cell is 16x16.
   // column 0 of row 0 is a blank (code 0); column 1 is code 1 = top-left quarter block
   expect(light(await pixel(page, 66, 50))).toBe(true); // code 0: blank
@@ -40,13 +46,17 @@ test('clearing the screen is a hard cut: the picture is replaced by the blank sc
   await page.waitForFunction(() => {
     const log = window.zx81Presenter.log;
     // a screen with a drawing and a result (the typed pause digit alone is not a result)
-    const answered = log.findIndex((rows) => rows.some((row) => row.includes('[Q1]')) && rows.some((row) => /^\d+$/.test(row)));
+    const answered = log.findIndex(
+      (rows) => rows.some((row) => row.includes('[Q1]')) && rows.some((row) => /^\d+$/.test(row)),
+    );
     return answered >= 0 && log.slice(answered + 1).some((rows) => rows.every((row) => row === ''));
   });
   const { answered, next } = await page.evaluate(() => {
     const log = window.zx81Presenter.log;
     // a screen with a drawing and a result (the typed pause digit alone is not a result)
-    const answered = log.findIndex((rows) => rows.some((row) => row.includes('[Q1]')) && rows.some((row) => /^\d+$/.test(row)));
+    const answered = log.findIndex(
+      (rows) => rows.some((row) => row.includes('[Q1]')) && rows.some((row) => /^\d+$/.test(row)),
+    );
     return { answered, next: log[answered + 1] };
   });
   expect(answered).toBeGreaterThan(0);
@@ -57,13 +67,10 @@ test('clearing the screen is a hard cut: the picture is replaced by the blank sc
 test('drawing stays immediate: each block appears as soon as it is printed', async ({ page }) => {
   await startTrainer(page, { pause: 1 });
   const blocks = (rows) => (rows.join('').match(/\[Q1\]/g) ?? []).length;
-  await page.waitForFunction(
-    (source) => {
-      const count = new Function(`return ${source}`)();
-      return window.zx81Presenter.log.some((rows) => count(rows) >= 3);
-    },
-    blocks.toString(),
-  );
+  await page.waitForFunction((source) => {
+    const count = new Function(`return ${source}`)();
+    return window.zx81Presenter.log.some((rows) => count(rows) >= 3);
+  }, blocks.toString());
   const counts = await page.evaluate((source) => {
     const count = new Function(`return ${source}`)();
     return window.zx81Presenter.log.map(count);

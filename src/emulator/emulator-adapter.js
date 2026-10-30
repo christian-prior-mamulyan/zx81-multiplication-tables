@@ -25,7 +25,15 @@ export { EVENTS, Emitter, FRAMES_PER_SECOND };
 const PPC = 0x4007; // ZX81 system variable: line number of the statement being executed
 
 // KeyboardEvent init for a key press, in the form the emulator's keyboard code reads it.
-export const KEY_CODES = { Enter: 13, Backspace: 8, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Delete: 46 };
+export const KEY_CODES = {
+  Enter: 13,
+  Backspace: 8,
+  ArrowLeft: 37,
+  ArrowUp: 38,
+  ArrowRight: 39,
+  ArrowDown: 40,
+  Delete: 46,
+};
 
 export function keyEventInit(key) {
   return {
@@ -237,7 +245,14 @@ export class RealZX81Emulator extends Emitter {
 /**
  * @param {{ kind?: string, scenario?: string, container?: any, base?: string, speed?: number | null, MockClass?: any }} options
  */
-export async function createEmulator({ kind = 'real', scenario = 'normal', container, base = './', speed = null, MockClass }) {
+export async function createEmulator({
+  kind = 'real',
+  scenario = 'normal',
+  container,
+  base = './',
+  speed = null,
+  MockClass,
+}) {
   if (kind === 'mock') {
     const Mock = MockClass ?? (await import('./mock-emulator.js')).MockZX81Emulator;
     return new Mock({ container, scenario });

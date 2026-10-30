@@ -10,7 +10,9 @@ test('the normal URL launches the trainer without any debug surface', async ({ p
   await expect(page.locator('#zx81-debug')).toBeHidden();
   const loaded = await page.evaluate(() => document.getElementById('zx81-frame').src);
   expect(loaded).toContain('tzx=../tapes/trainer.p');
-  await page.waitForFunction(() => document.getElementById('zx81-frame').contentWindow.zx81Machine.peek(0x400c, 2)[0] !== 0);
+  await page.waitForFunction(
+    () => document.getElementById('zx81-frame').contentWindow.zx81Machine.peek(0x400c, 2)[0] !== 0,
+  );
 });
 
 test('player instructions explain the game', async ({ page }) => {
@@ -71,7 +73,9 @@ test('the Reload button, outside the simulation, starts the program again', asyn
   // back at the prompt: no drawing, waiting for the pause input
   await page.waitForFunction(() => {
     const rows = window.zx81.getScreenRows();
-    return rows.includes('ENTER YOUR INDIVIDUAL PAUSE') && rows.includes('{L}') && !rows.some((row) => row.includes('[Q1]'));
+    return (
+      rows.includes('ENTER YOUR INDIVIDUAL PAUSE') && rows.includes('{L}') && !rows.some((row) => row.includes('[Q1]'))
+    );
   });
   // and the real keyboard works again right after the reload
   await page.keyboard.press('2');

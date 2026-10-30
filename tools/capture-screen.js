@@ -55,7 +55,9 @@ export async function captureWith(page, baseUrl, outDir) {
             first = frame;
             if (frame >= latestFirstFrame) {
               off();
-              reject(new Error(`frame handler installed too late (first frame ${frame}); frame numbers would not be exact`));
+              reject(
+                new Error(`frame handler installed too late (first frame ${frame}); frame numbers would not be exact`),
+              );
               return;
             }
           }
@@ -76,7 +78,12 @@ export async function captureWith(page, baseUrl, outDir) {
         });
         window.zx81.reset();
       }),
-    { after: FREEZE_AFTER_ANSWER, script: KEY_SCRIPT, latestFirstFrame: LATEST_FIRST_FRAME, parseSource: parseExercise.toString() },
+    {
+      after: FREEZE_AFTER_ANSWER,
+      script: KEY_SCRIPT,
+      latestFirstFrame: LATEST_FIRST_FRAME,
+      parseSource: parseExercise.toString(),
+    },
   );
 
   const { screenshot, text, dfile } = await page.evaluate(async () => {
@@ -114,11 +121,14 @@ async function main() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     const page = await browser.newPage();
     const result = await captureWith(page, `http://localhost:${port}`, join(ROOT, 'artifacts'));
-    console.log(`captured to ${result.outDir} (exercise ${result.first.a} X ${result.first.b}, frozen at frame ${result.frozenAt})`);
+    console.log(
+      `captured to ${result.outDir} (exercise ${result.first.a} X ${result.first.b}, frozen at frame ${result.frozenAt})`,
+    );
   } finally {
     await browser.close();
     // `uv run` starts Python as a child; on Windows kill() would leave that child serving the port
-    if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' });
+    if (process.platform === 'win32')
+      spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' });
     else server.kill();
   }
 }

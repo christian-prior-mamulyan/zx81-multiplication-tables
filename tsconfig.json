@@ -6,20 +6,14 @@
     "target": "ES2023",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": [
-      "ES2023",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "include": [
     "src/web/**/*.js",
@@ -29,10 +23,5 @@
     "tools/*.js",
     "types/*.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "public",
-    "build",
-    "src/emulator/zx81"
-  ]
+  "exclude": ["node_modules", "public", "build", "src/emulator/zx81"]
 }
